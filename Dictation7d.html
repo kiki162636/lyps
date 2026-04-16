@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌈 嶺英全自動默書機器人 (Bug修復版) 🌈</title>
+    <style>
+        :root {
+            --forest-green: #2ecc71;
+            --sky-blue: #3498db;
+            --sun-yellow: #f1c40f;
+            --berry-red: #e74c3c;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Microsoft JhengHei', sans-serif;
+            background-color: #f0f3f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 5px solid var(--forest-green);
+        }
+
+        .header {
+            text-align: center;
+            background: var(--forest-green);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #fff;
+            border: 2px solid #eee;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .card h2 { color: var(--sky-blue); margin-top: 0; }
+
+        .btn-play {
+            background: var(--sun-yellow);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #d4ac0d;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+
+        .btn-play:active { transform: translateY(3px); box-shadow: 0 2px 0 #d4ac0d; }
+        .btn-play:disabled { background: #ccc; box-shadow: 0 5px 0 #999; cursor: not-allowed; }
+
+        .timer-display {
+            font-size: 1.1rem;
+            color: var(--berry-red);
+            font-weight: bold;
+            margin-left: 15px;
+            background: #ffeaa7;
+            padding: 5px 10px;
+            border-radius: 10px;
+            display: none; /* 預設隱藏，計時才顯示 */
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--forest-green);
+            outline: none;
+            background: #f4fff8;
+        }
+
+        textarea { height: 150px; resize: none; font-family: sans-serif; line-height: 1.5; }
+
+        .submit-all {
+            background: var(--berry-red);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 20px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #c0392b;
+            margin-top: 20px;
+        }
+
+        .submit-all:hover { background: #c0392b; }
+
+        /* 成績單樣式 */
+        #result-screen { display: none; text-align: center; }
+        .score-box { font-size: 4rem; color: var(--forest-green); margin: 20px 0; font-weight: bold;}
+        .feedback { font-size: 1.5rem; margin-bottom: 30px; }
+        .detail-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1.1rem; }
+        .detail-table th, .detail-table td { border: 2px solid #ddd; padding: 12px; text-align: left; }
+        .correct { color: #27ae60; background: #eafaf1; }
+        .wrong { color: #c0392b; background: #fdedec; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-ui">
+    <div class="header">
+        <h1>🐾 嶺英小四：電腦計分默書大挑戰 🐾</h1>
+        <p>P.4 Dictation (2) | 24th April, 2026</p>
+    </div>
+
+    <div class="card">
+        <h2>Part A: Vocabulary (40%)</h2>
+        <p>💡 每個字讀 2 次，中間休息 20 秒。</p>
+        <button class="btn-play" id="btnA" onclick="playA()">🔊 播放 Part A</button>
+        <span id="timerA" class="timer-display"></span>
+        <div class="input-grid" id="gridA"></div>
+    </div>
+
+    <div class="card">
+        <h2>Part B: Seen Dictation (40%)</h2>
+        <p>💡 每次讀半句 (隔10秒)，最後重讀整段。</p>
+        <button class="btn-play" id="btnB" onclick="playB()">🔊 播放 Part B</button>
+        <span id="timerB" class="timer-display"></span>
+        <textarea id="ansB" placeholder="請在此輸入整段課文內容..."></textarea>
+    </div>
+
+    <div class="card">
+        <h2>Part C: Recited (20%)</h2>
+        <p>💡 請憑記憶背默以下兩句：</p>
+        <div style="margin-bottom:10px;">1. <input type="text" id="ansC1" placeholder="When Amy was six..."></div>
+        <div>2. <input type="text" id="ansC2" placeholder="I could comb my hair..."></div>
+    </div>
+
+    <div class="card">
+        <h2>Part D: Fun Dictation (Bonus 30%)</h2>
+        <button class="btn-play" id="btnD" onclick="playD()">🔊 播放 Part D</button>
+        <span id="timerD" class="timer-display"></span>
+        <div class="input-grid" id="gridD"></div>
+    </div>
+
+    <button class="submit-all" onclick="calculateScore()">📊 我寫好了，交卷評分！</button>
+</div>
+
+<div class="container" id="result-screen">
+    <h1 id="res-title">🎉 默書成績單 🎉</h1>
+    <p id="res-time"></p>
+    <div class="score-box" id="res-score">0</div>
+    <div class="feedback" id="res-comment"></div>
+    <div id="res-details" style="overflow-x: auto;"></div>
+    <button class="btn-play" style="margin-top:30px; background:var(--sky-blue); box-shadow:0 5px 0 #2980b9; color:white;" onclick="location.reload()">🔄 再挑戰一次</button>
+</div>
+
+<script>
+    const data = {
+        A: ["make the bed", "feed my pet", "get dressed", "tidy my room", "bake cookies", "lunch box", "shoelaces", "walk to school", "ourselves", "themselves", "yourself", "suddenly", "different", "smart", "surprised"],
+        B: "Andy and his mum had lunch at Tang's Congee Shop yesterday. Mr Tang's dad opened the shop in 1950 when Mr Tang was five. They worked hard in the shop every day. Mr Tang helped out at the shop every day. He could cook congee by himself when he was ten. His sister could work out the change by herself. 'Well, I can play the sushi-making game on my tablet by myself!' Andy said.",
+        BChunks: ["Andy and his mum", "had lunch at Tang's Congee Shop yesterday.", "Mr Tang's dad opened the shop in 1950", "when Mr Tang was five.", "They worked hard in the shop", "every day.", "Mr Tang helped out at the shop", "every day.", "He could cook congee by himself", "when he was ten.", "His sister could work out the change", "by herself.", "Well, I can play the sushi-making game", "on my tablet by myself! Andy said."], // 合併了最後一句使斷句更自然
+        C: ["When Amy was six, she could pack her school bag by herself.", "I could comb my hair by myself when I was four."],
+        D: ["confused", "worried", "interested", "delighted", "bored", "annoyed"]
+    };
+
+    // 系統狀態控制變數
+    let isTesting = true;
+    let currentUtterance = null; // 防被瀏覽器回收(Garbage Collection)的全局變數
+
+    // 初始化界面
+    window.onload = () => {
+        const gridA = document.getElementById('gridA');
+        data.A.forEach((_, i) => gridA.insertAdjacentHTML('beforeend', `<input type="text" id="a-${i}" placeholder="Q${i+1}.">`));
+        const gridD = document.getElementById('gridD');
+        data.D.forEach((_, i) => gridD.insertAdjacentHTML('beforeend', `<input type="text" id="d-${i}" placeholder="Bonus ${i+1}.">`));
+    };
+
+    // 核心語音函數 (Bug Fix: 強制停止前一個音，並防止 Garbage Collection)
+    async function speak(text, rate = 0.8) {
+        if (!isTesting) return; // 交卷後不再發聲
+        return new Promise(resolve => {
+            window.speechSynthesis.cancel(); 
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = 'en-GB'; // 英式發音更適合香港默書
+            currentUtterance.rate = rate;
+            currentUtterance.onend = resolve;
+            currentUtterance.onerror = resolve; // 發生錯誤也繼續往下走，避免卡死
+            window.speechSynthesis.speak(currentUtterance);
+        });
+    }
+
+    // 倒數計時函數 (Bug Fix: 交卷時立刻跳出迴圈)
+    async function wait(sec, displayId) {
+        const el = document.getElementById(displayId);
+        el.style.display = 'inline-block';
+        for (let i = sec; i > 0; i--) {
+            if (!isTesting) { el.style.display = 'none'; break; }
+            el.innerText = `⏳ 等待中 (${i}s)...`;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        if (isTesting) el.style.display = 'none';
+    }
+
+    // 播放邏輯
+    async function playA() {
+        document.getElementById('btnA').disabled = true;
+        for (let i = 0; i < data.A.length; i++) {
+            if(!isTesting) break;
+            await speak(`Number ${i+1}. ${data.A[i]}`);
+            await wait(20, 'timerA');
+            if(!isTesting) break;
+            await speak(`Listen again. ${data.A[i]}`);
+            await new Promise(r => setTimeout(r, 2000));
+        }
+        if(isTesting) await speak("Part A finished.");
+    }
+
+    async function playB() {
+        document.getElementById('btnB').disabled = true;
+        for (let chunk of data.BChunks) {
+            if(!isTesting) break;
+            await speak(chunk);
+            await wait(10, 'timerB');
+            if(!isTesting) break;
+            await speak(chunk);
+            await new Promise(r => setTimeout(r, 2000));
+        }
+        if(isTesting) {
+            await speak("Now listen to the whole text.");
+            await speak(data.B, 0.7);
+        }
+    }
+
+    async function playD() {
+        document.getElementById('btnD').disabled = true;
+        for (let i = 0; i < data.D.length; i++) {
+            if(!isTesting) break;
+            await speak(`Number ${i+1}. ${data.D[i]}`);
+            await wait(20, 'timerD');
+            if(!isTesting) break;
+            await speak(`Listen again. ${data.D[i]}`);
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+
+    // 清理字串作比對 (忽略大小寫、標點符號、換行、多餘空格)
+    function clean(s) {
+        return (s || "").toLowerCase().replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ").trim();
+    }
+
+    function calculateScore() {
+        if (!confirm("確定要交卷並查看電腦評分嗎？")) return;
+
+        // 停止所有語音和計時
+        isTesting = false;
+        window.speechSynthesis.cancel();
+
+        let scoreA = 0, scoreB = 0, scoreC = 0, scoreD = 0;
+        let details = "<table class='detail-table'><tr><th>題目</th><th>你的答案</th><th>標準答案</th></tr>";
+
+        // Part A 批改 (40%)
+        data.A.forEach((ans, i) => {
+            let user = document.getElementById(`a-${i}`).value;
+            let isCorrect = clean(user) === clean(ans);
+            if (isCorrect) scoreA++;
+            details += `<tr class="${isCorrect?'correct':'wrong'}"><td>Part A - ${i+1}</td><td>${user || '(未填寫)'}</td><td>${ans}</td></tr>`;
+        });
+
+        // Part B 批改 (40%) - Bug Fix: 處理全空的情況
+        let userB = document.getElementById('ansB').value;
+        let cleanUserB = clean(userB);
+        let cleanTargetB = clean(data.B);
+        
+        if (cleanUserB === cleanTargetB) {
+            scoreB = 40;
+        } else {
+            let userWords = cleanUserB.split(' ').filter(w => w.length > 0);
+            let targetWords = cleanTargetB.split(' ').filter(w => w.length > 0);
+            
+            if(userWords.length === 0) {
+                scoreB = 0;
+            } else {
+                let matches = userWords.filter(w => targetWords.includes(w)).length;
+                scoreB = Math.round((matches / targetWords.length) * 40);
+            }
+        }
+        details += `<tr class="${scoreB>30?'correct':'wrong'}"><td>Part B (段落)</td><td><i>得分: ${scoreB}/40</i></td><td>${data.B}</td></tr>`;
+
+        // Part C 批改 (20%)
+        [1, 2].forEach((num, i) => {
+            let user = document.getElementById(`ansC${num}`).value;
+            let isCorrect = clean(user) === clean(data.C[i]);
+            if (isCorrect) scoreC += 10;
+            details += `<tr class="${isCorrect?'correct':'wrong'}"><td>Part C - ${num}</td><td>${user || '(未填寫)'}</td><td>${data.C[i]}</td></tr>`;
+        });
+
+        // Part D 批改 (Bonus 30%)
+        details += "<tr><th colspan='3' style='background:#f1c40f; text-align:center;'>Part D: Fun Dictation (Bonus)</th></tr>";
+        data.D.forEach((ans, i) => {
+            let user = document.getElementById(`d-${i}`).value;
+            let isCorrect = clean(user) === clean(ans);
+            if (isCorrect) scoreD += 5; // 每題 5 分 Bonus
+            details += `<tr class="${isCorrect?'correct':'wrong'}"><td>Bonus - ${i+1}</td><td>${user || '(未填寫)'}</td><td>${ans}</td></tr>`;
+        });
+
+        details += "</table>";
+
+        // 總分計算 (A + B + C 為本分 100 分，D 為加分)
+        let baseScore = Math.round(((scoreA / data.A.length) * 40)) + scoreB + scoreC;
+        let finalScore = baseScore + scoreD;
+        
+        // 顯示成績頁
+        document.getElementById('main-ui').style.display = 'none';
+        const resScreen = document.getElementById('result-screen');
+        resScreen.style.display = 'block';
+        
+        document.getElementById('res-time').innerText = "挑戰完成時間: " + new Date().toLocaleString('zh-HK');
+        document.getElementById('res-score').innerText = finalScore + " 分";
+        
+        let comment = "加油！下次會更好！";
+        if (finalScore >= 100) comment = "👑 完美！加上 Bonus 分數破百啦！";
+        else if (finalScore >= 90) comment = "🌟 簡直是天才！太厲害了！";
+        else if (finalScore >= 70) comment = "👍 做得好！非常棒的表現！";
+        else if (finalScore >= 50) comment = "📝 合格了，再檢查一下錯字吧！";
+        
+        document.getElementById('res-comment').innerText = comment;
+        document.getElementById('res-details').innerHTML = details;
+    }
+</script>
+
+</body>
+</html>
