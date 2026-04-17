@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍎《我是蘋果》奇妙寫作之旅</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', '微軟正黑體', sans-serif;
+            background-color: #fff9e6;
+            color: #333;
+            line-height: 1.8;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 4px dashed #ff9999;
+        }
+        h1 {
+            color: #d93838;
+            text-align: center;
+            font-size: 2.2em;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+            background-color: #45a049;
+        }
+        .poem-box {
+            background-color: #fcf8f2;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            border-left: 6px solid #d93838;
+        }
+        .interactive-word {
+            color: #d93838;
+            font-weight: bold;
+            text-decoration: underline;
+            text-decoration-style: wavy;
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+        }
+        .interactive-word .tooltip {
+            visibility: hidden;
+            width: 140px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -70px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75em;
+            font-weight: normal;
+            line-height: 1.4;
+        }
+        .interactive-word:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .teaching-section {
+            background-color: #e6f7ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #0066cc;
+        }
+        .exercise {
+            background-color: #e6ffe6;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            width: 70%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🍎 《我是蘋果》寫作魔法陣</h1>
+    
+    <div class="controls">
+        <button onclick="playAudio()">🔊 廣東話老師導讀 (撳我聽聲)</button>
+    </div>
+
+    <div class="poem-box">
+        <p style="text-align: center; color: gray; font-size: 0.9em;">改寫自傅天琳原作</p>
+        <p>
+            我是蘋果<br>
+            我是一個<span class="interactive-word">小小的<span class="tooltip">寫出蘋果的外形</span></span>，<span class="interactive-word">紅豔豔<span class="tooltip">寫出蘋果的顏色</span></span>的蘋果<br>
+            <br>
+            我的微笑，掛在孩子臉上<br>
+            我的甜蜜，流進老人<span class="interactive-word">心窩<span class="tooltip">帶給人幸福的感覺</span></span><br>
+            我給遠航大海的水手充飢<br>
+            我給探索沙漠的行者解渴<br>
+            我使痛苦著的病人<span class="interactive-word">恢復健康<span class="tooltip">蘋果的營養價值</span></span><br>
+            我使健康的人更愉快地生活<br>
+            <br>
+            我是<span class="interactive-word">太陽和大地<span class="tooltip">代表陽光與泥土的孕育</span></span>共同的女兒<br>
+            我是葉子和花兒合唱的<span class="interactive-word">歌<span class="tooltip">比喻結出的果實</span></span><br>
+            我是可以摘來的<span class="interactive-word">月亮和星星<span class="tooltip">比喻蘋果的珍貴</span></span><br>
+            我是可以拾得的珍珠和貝殼<br>
+            我是凝固的汗水和結晶的<span class="interactive-word">露珠<span class="tooltip">代表農夫艱辛的成果</span></span><br>
+            我是跳躍的希望和<span class="interactive-word">熱情的火<span class="tooltip">比喻生命，象徵健康與活力</span></span><br>
+            <br>
+            我是蘋果<br>
+            我是一個小小的，紅豔豔的蘋果
+        </p>
+        <p style="font-size: 0.8em; color: #d93838; text-align: center;">💡 試下將滑鼠移去有波浪底線嘅字上面，睇下老師嘅隱藏筆記啦！</p>
+    </div>
+
+    <div class="teaching-section">
+        <h2>✨ 寫作秘笈大公開</h2>
+        <ul>
+            <li><strong>第一招：化身萬物 (擬人法)</strong><br>將蘋果當做人嚟寫，話佢有「微笑」，識得「唱歌」，令成首詩變得好生動、好有感情！</li>
+            <li><strong>第二招：排隊說話 (排比法)</strong><br>連續用「我給...」、「我使...」、「我是...」，讀起上嚟就好似唱歌一樣，好有節奏感，仲可以強調蘋果嘅偉大添。</li>
+            <li><strong>第三招：超級變變變 (暗喻法)</strong><br>唔講「好似」，直接話蘋果「是」月亮、星星、火，令讀者有好豐富嘅想像空間！</li>
+        </ul>
+    </div>
+
+    <div class="exercise">
+        <h2>✍️ 小小作家練筆區</h2>
+        <p>而家到你大顯身手喇！請你模仿《我是蘋果》嘅寫法，用**「我是雨滴」**做題目，運用「排比」同「擬人」寫兩句詩啦：</p>
+        <p>
+            我給 <input type="text" id="input1" placeholder="例如：乾渴嘅小草帶嚟生機"> <br>
+            我使 <input type="text" id="input2" placeholder="例如：悶熱嘅大地變得清涼">
+        </p>
+        <button onclick="checkExercise()" style="background-color: #ff9933;">✨ 交功課 ✨</button>
+    </div>
+</div>
+
+<script>
+    // 廣東話語音合成設定
+    function playAudio() {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // 停止之前的語音
+
+            // 更新為更自然親切的廣東話口吻
+            const textToRead = "各位同學大家好！歡迎嚟到寫作魔法陣。今日我哋一齊嚟讀下《我是蘋果》呢首新詩。你哋睇下，作者傅天琳將自己當做一個蘋果，呢種寫法就叫做『擬人法』。詩入面仲有好多靚靚嘅句子，例如『我是太陽和大地共同的女兒』，呢個係『暗喻』，讚美蘋果吸收曬大自然嘅精華。而家請你慢慢睇下全首詩，將滑鼠移去有紅色底線嘅字度，就可以睇到隱藏嘅筆記喇！睇完記住喺下面挑戰下做個小小作家呀！";
+            
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.lang = 'zh-HK'; // 設定語言為香港廣東話
+            
+            // 嘗試尋找女聲
+            const voices = window.speechSynthesis.getVoices();
+            const hkVoice = voices.find(voice => voice.lang === 'zh-HK' || voice.lang === 'zh-TW');
+            if (hkVoice) {
+                utterance.voice = hkVoice;
+            }
+            
+            utterance.rate = 0.95; // 語速適中
+            utterance.pitch = 1.1; // 稍微提高音調
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("哎呀！你嘅瀏覽器唔支援語音導讀功能呀。");
+        }
+    }
+
+    // 小練筆回饋
+    function checkExercise() {
+        const val1 = document.getElementById('input1').value.trim();
+        const val2 = document.getElementById('input2').value.trim();
+        
+        if(val1 === "" || val2 === "") {
+            alert("未做完呀！要寫曬兩句先可以交功課㗎，畀心機！💪");
+        } else {
+            alert("寫得好叻呀！你已經成功掌握咗排比同擬人嘅技巧啦，真係一個出色嘅小小作家！🎉");
+        }
+    }
+
+    // 確保語音庫載入

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>「我是小作家」——蘋果新詩寫作教學</title>
+    <style>
+        body {
+            font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f3e8; /* 仿古紙色 */
+            color: #333;
+        }
+
+        header {
+            background-color: #d1413a; /* 蘋果紅 */
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+            padding-bottom: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-title {
+            color: #d1413a;
+            border-left: 5px solid #d1413a;
+            padding-left: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* 第一部分：音頻播放 */
+        #play-section {
+            text-align: center;
+        }
+        #play-btn {
+            background-color: #d1413a;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background 0.3s;
+        }
+        #play-btn:hover {
+            background-color: #b1312a;
+        }
+        #play-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #audio-status {
+            margin-top: 10px;
+            font-style: italic;
+            color: #777;
+        }
+
+        /* 第二部分：詩歌展示與互動分析 */
+        .poetry-display {
+            font-size: 1.3em;
+            line-height: 2em;
+            text-align: center;
+            background-color: #fffaf0;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .poetry-title {
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #d1413a;
+        }
+
+        .poetry-line {
+            margin: 10px 0;
+        }
+
+        /* 模擬課本手寫筆記 */
+        .annotation {
+            color: #e67e22; /* 橙色模擬筆記色 */
+            position: absolute;
+            font-size: 0.7em;
+            line-height: 1.2em;
+            font-family: 'Kaiti', 'STKaiti', serif; /* 楷體模擬手寫 */
+        }
+        .anno-1 { top: 75px; right: 20%; width: 100px; }
+        .anno-2 { top: 120px; right: 40%; width: 100px; }
+        .anno-3 { top: 160px; right: 60%; width: 100px; }
+        .anno-4 { top: 220px; left: 10%; width: 120px; }
+
+        /* 互動提示框 */
+        .highlight {
+            border-bottom: 2px dashed #d1413a;
+            cursor: help;
+            position: relative;
+            display: inline-block;
+        }
+        .highlight::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            line-height: 1.4em;
+            white-space: nowrap;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        .highlight:hover::after {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* 第三部分：寫作練習 */
+        .practice-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .practice-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        #check-answer {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #feedback {
+            margin-top: 10px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        /* 第四部分：我的詩歌 */
+        .template-box {
+            background-color: #e8f8f5;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #final-poem-display {
+            display: none;
+            font-size: 1.3em;
+            line-height: 2em;
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border: 2px solid #2ecc71;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .poetry-display {
+                font-size: 1.1em;
+            }
+            .practice-box {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>我是小作家</h1>
+    <h3>學寫「我是」比喻詩</h3>
+</header>
+
+<div class="container">
+
+    <section id="play-section">
+        <h2 class="section-title">步驟一：用心聆聽</h2>
+        <p>點擊下方按鈕，聆聽這首詩歌的廣東話女聲導讀，感受它的節奏和情感。</p>
+        <button id="play-btn">播放導讀 (廣東話女聲)</button>
+        <div id="audio-status"></div>
+        <audio id="poetry-audio">
+            <source src="apple_poetry_cantonese.mp3" type="audio/mpeg">
+            你的瀏覽器不支持音頻播放。
+        </audio>
+    </section>
+
+    <section id="analyze-section">
+        <h2 class="section-title">步驟二：解讀詩歌</h2>
+        <p>仔細閱讀課文，將滑鼠懸停在 <span style="border-bottom: 2px dashed #d1413a;">帶有虛線</span> 的文字上，查看這首詩的寫作奧秘。</p>
+        
+        <div class="poetry-display">
+            <div class="annotation anno-1">外形</div>
+            <div class="annotation anno-2">顏色</div>
+            <div class="annotation anno-3">比喻</div>
+            <div class="annotation anno-4">擬人/象徵快樂</div>
+
+            <div class="poetry-title">我是蘋果 新詩</div>
+            <div class="poetry-line">我是蘋果</div>
+            <div class="poetry-line">我是一個<span class="highlight" data-tooltip="疊詞，寫出了小巧的模樣">小小的</span>，<span class="highlight" data-tooltip="疊詞，寫出了鮮豔的色彩">紅豔豔的</span>蘋果</div>
+            <div class="poetry-line">我的<span class="highlight" data-tooltip="把蘋果當作人，它會微笑">微笑</span>，掛在<span class="highlight" data-tooltip="蘋果帶給孩子快樂">孩子臉上</span></div>
+            <div class="poetry-line">我的甜蜜，<span class="highlight" data-tooltip="甜蜜流進心窩，象徵幸福">流進老人心窩</span></div>
+            <div class="poetry-line">我給遠航大海的水手充飢</div>
+            <div class="poetry-line">我給探索沙漠的行者解渴</div>
+            <div class="poetry-line">我使痛苦著的病人恢復健康</div>
+            <div class="poetry-line">我使健康的人更愉快地生活</div>
+            <div class="poetry-line">我是蘋果</div>
+            <div class="poetry-line">我是一個小小的，紅豔豔的蘋果</div>
+            <div class="poetry-line">我是<span class="highlight" data-tooltip="把蘋果比作是大自然的恩賜">太陽和天地共同的女兒</span></div>
+            <div class="poetry-line">我是<span class="highlight" data-tooltip="用優美的畫面比喻生命的過程">葉子和花兒合唱的歌</span></div>
+            <div class="poetry-line">我是可以摘來的<span class="highlight" data-tooltip="比喻它美麗而觸手可及">月亮和星星</span></div>
+            <div class="poetry-line">我是可以拾得的<span class="highlight" data-tooltip="比喻它像寶藏一樣珍貴">珍珠和貝殼</span></div>
+            <div class="poetry-line">我是<span class="highlight" data-tooltip="比喻辛苦勞動的成果">凝固的汗水</span>和結晶的露珠</div>
+            <div class="poetry-line">我是<span class="highlight" data-tooltip="比喻蓬勃的生命力">跳躍的希望</span>和熱情的火</div>
+            <div class="poetry-line">我是蘋果</div>
+            <div class="poetry-line">我是一個小小的，紅豔豔的蘋果</div>
+        </div>
+    </section>
+
+    <section id="practice-section">
+        <h2 class="section-title">步驟三：化身萬物 (動動腦)</h2>
+        <p>這首詩歌使用了「我是 [事物]」和「我是 [比喻]」的手法。現在，讓我們也來試試吧！如果你可以化身為一樣東西，你想化身為什麼？</p>
+        
+        <div class="template-box">
+            <h3>練習 1：擬人與帶來的情感</h3>
+            <p>我想化身為：<span class="highlight" data-tooltip="例如：鉛筆、小鳥、大樹、溪水">溪水</span></p>
+            <div class="practice-box">
+                我是 <input type="text" id="subject" class="practice-input" placeholder="我的溪水">
+                我給 <input type="text" id="recipient" class="practice-input" placeholder="乾渴的小鹿">
+                帶來了 <input type="text" id="feeling" class="practice-input" placeholder="生命和清涼">
+            </div>
+            
+            <h3>練習 2：創意大比喻</h3>
+            <div class="practice-box">
+                我是 <input type="text" id="source1" class="practice-input" placeholder="山峰">
+                和 <input type="text" id="source2" class="practice-input" placeholder="白雲">
+                共同的 <input type="text" id="product" class="practice-input" placeholder="孩子">
+            </div>
+            <button id="check-answer">生成我的詩句</button>
+            <p id="feedback"></p>
+        </div>
+    </section>
+
+    <section id="final-section">
+        <h2 class="section-title">步驟四：我的詩歌派對</h2>
+        <p>恭喜你完成練習！現在，請將你的創意填入下方模板，生成你的第一首「我是」比喻詩。</p>
+        
+        <div class="template-box">
+            我是 [事物]<br>
+            我是 [形容詞] 的 [事物]<br>
+            我的 [情感]，[動作] 在 [誰/哪裡]<br>
+            我是 [事物1] 和 [事物2] 共同的 [什麼]
+            <p><small>(請填寫上方練習的內容，或者自由發揮)</small></p>
+        </div>
+
+        <div id="final-poem-display">
+            </div>
+    </section>
+
+</div>
+
+<script>
+    // 第一部分：音頻播放邏輯
+    const playBtn = document.getElementById('play-btn');
+    const audioElement = document.getElementById('poetry-audio');
+    const audioStatus = document.getElementById('audio-status');
+
+    playBtn.addEventListener('click', () => {
+        if (audioElement.paused) {
+            audioElement.play().then(() => {
+                audioStatus.textContent = '導讀播放中...';
+                playBtn.textContent = '暫停';
+            }).catch(error => {
+                audioStatus.textContent = '（請添加廣東話女聲錄音檔 `apple_poetry_cantonese.mp3` 至與 HTML 相同檔案夾中以播放。）';
+                console.error('Audio playback failed:', error);
+            });
+        } else {
+            audioElement.pause();
+            audioStatus.textContent = '已暫停。';
+            playBtn.textContent = '播放導讀';
+        }
+    });
+
+    audioElement.addEventListener('ended', () => {
+        audioStatus.textContent = '導讀播放完畢。';
+        playBtn.textContent = '重播';
+    });
+
+    // 第三部分：寫作練習反饋
+    const checkAnswerBtn = document.getElementById('check-answer');
+    const feedbackP = document.getElementById('feedback');
+    const finalPoemDisplay = document.getElementById('final-poem-display');
+
+    checkAnswerBtn.addEventListener('click', () => {
+        const subject = document.getElementById('subject').value || '[ ]';
+        const recipient = document.getElementById('recipient').value || '[ ]';
+        const feeling = document.getElementById('feeling').value || '[ ]';
+        const source1 = document.getElementById('source1').value || '[ ]';
+        const source2 = document.getElementById('source2').value || '[ ]';
+        const product = document.getElementById('product').value || '[ ]';
+
+        if (subject && recipient && feeling && source1 && source2 && product && product != '[ ]') {
+            feedbackP.textContent = '你的創意真棒！讓我們來看看你的詩句：';
+            feedbackP.style.color = '#27ae60';
+            
+            finalPoemDisplay.innerHTML = `
+                <div class="poetry-title">我是${subject} 新詩</div>
+                <div class="poetry-line">我是${subject}</div>
+                <div class="poetry-line">我是清澈、活潑的${subject}</div>
+                <div class="poetry-line">我的甜蜜（生命），流進${recipient}心窩</div>
+                <div class="poetry-line">我是${source1}和${source2}共同的${product}</div>
+                <div class="poetry-line">我是${subject}</div>
+            `;
+            finalPoemDisplay.style.display = 'block';
+            window.scrollTo(0, document.body.scrollHeight); // 滾動到底部
+        } else {
+            feedbackP.textContent = '請先填寫所有的輸入框，再生成詩句。';
+            feedbackP.style.color = '#e74c3c';
+            finalPoemDisplay.style.display = 'none';
+        }
+    });
+</script>
+
+</body>
+</html>

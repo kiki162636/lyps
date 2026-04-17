@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢字小宇宙 - 元素探險</title>
+    <style>
+        /* 可愛風格全域設定 */
+        body {
+            font-family: 'Comic Sans MS', 'Microsoft JhengHei', sans-serif;
+            background-color: #FFF5E1; 
+            color: #5D4037;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #FF8A65;
+            text-shadow: 2px 2px #FFE0B2;
+        }
+
+        /* 網格排版 */
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 字卡設計 */
+        .card {
+            background: white;
+            border: 4px solid #FFD54F;
+            border-radius: 25px;
+            width: 130px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #FFD54F; 
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 0 #FFC107;
+            background-color: #FFFDE7;
+        }
+
+        .card-emoji { font-size: 40px; }
+        .card-char { font-size: 50px; font-weight: bold; margin-top: 5px; }
+
+        /* 彈出視窗 (Modal) 設計 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            border: 6px solid #81C784;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            position: relative;
+            text-align: center;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 25px;
+            font-weight: bold;
+            color: #E57373;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .modal-header { font-size: 60px; font-weight: bold; color: #388E3C; margin-bottom: 5px; }
+        .ancient-pic { font-size: 50px; margin: 10px 0; }
+        
+        /* 可點擊發聲的區塊設計 */
+        .clickable-box {
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+        
+        .clickable-box:hover {
+            transform: scale(1.02);
+            filter: brightness(0.95); /* 滑鼠懸停時稍微變暗提示可點擊 */
+        }
+        
+        .clickable-box:active {
+            transform: scale(0.98);
+        }
+
+        .story-box { background: #E8F5E9; padding: 15px; border-radius: 15px; margin: 15px 0; font-size: 1.1em; line-height: 1.5; }
+        .evolution-box { background: #FFF3E0; padding: 15px; border-radius: 15px; text-align: left; }
+        .evolution-title { font-weight: bold; color: #E64A19; margin-bottom: 5px; border-bottom: 2px dashed #FFCC80; padding-bottom: 5px;}
+        
+        .hint-text {
+            font-size: 0.8em;
+            color: #757575;
+            display: block;
+            margin-top: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>✨ 漢字小宇宙 ✨</h1>
+    <p>滑鼠游標指住字卡就會讀出嚟，㩒入去仲有更多故事！</p>
+
+    <div class="grid-container" id="cardGrid">
+        </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">✖</button>
+            <div class="ancient-pic" id="modalOld">☀️</div>
+            <div class="modal-header" id="modalChar">日</div>
+            
+            <div class="story-box clickable-box" onclick="speakText(this.innerText)">
+                🔊 <span id="modalStory">故事內容</span>
+                <span class="hint-text">(👆 㩒我聽故仔)</span>
+            </div>
+            
+            <div class="evolution-box clickable-box" onclick="speakText(this.innerText)">
+                <div class="evolution-title">🔍 字詞變變變： 🔊</div>
+                <div id="modalWords">
+                    字詞內容
+                </div>
+                <span class="hint-text" style="text-align: center;">(👆 㩒我聽字詞)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 漢字資料庫 ---
+        const charData = {
+            '日': { emoji: '☀️', old: '🌞', story: '古人畫咗個圓圈，中間加一點代表發光嘅太陽！', words: '明：日加月，兩個一齊照，超級光猛！\n晴：太陽出嚟喇，代表好天氣！' },
+            '月': { emoji: '🌙', old: '🌛', story: '因為滿月好少見，古人就畫咗個月牙形狀代表月亮。', words: '朋：兩個月亮孖住上，代表好朋友！\n期：用月亮嘅圓缺嚟計算時間。' },
+            '金': { emoji: '💰', old: '✨', story: '泥土裡面閃閃發光嘅礦物，就係金屬啦！', words: '錢：以前啲錢係用金屬造㗎！\n鐵：好堅硬嘅金屬，用金字部。' },
+            '木': { emoji: '🌳', old: '🌲', story: '畫咗樹幹同埋啲樹枝，就係一棵樹。', words: '林：木加木，好多樹！\n森：三個木，代表超級多樹嘅大森林！' },
+            '水': { emoji: '💧', old: '🌊', story: '好似一條河中間有水流過，旁邊有水花濺起。', words: '冰：結咗冰嘅水，凍冰冰！\n汗：做完運動身體流出嚟嘅水。' },
+            '火': { emoji: '🔥', old: '🌋', story: '三條火苗向上燒緊，好熱呀！', words: '炎：火加火，兩把火一齊燒，熱到出汗！\n災：屋企裡面有火，就係火災啦。' },
+            '土': { emoji: '🌍', old: '🌱', story: '地上一粒泥土，或者係植物喺泥土生長出嚟嘅樣。', words: '地：泥土鋪成嘅地方。\n塵：好細好細飛喺半空嘅泥土。' },
+            '山': { emoji: '⛰️', old: '🗻', story: '畫咗三個山峰，中間最高，旁邊兩個矮啲。', words: '岩：山上嘅大石頭。\n峰：山最高最尖嘅地方！' }
+        };
+
+        // 動態生成首頁字卡
+        function initCards() {
+            const grid = document.getElementById('cardGrid');
+            for (let char in charData) {
+                const data = charData[char];
+                // 加入 onmouseenter="speak('${char}')" 實現 Hover 發聲
+                const cardHTML = `
+                    <div class="card" onclick="openModal('${char}')" onmouseenter="speak('${char}')">
+                        <span class="card-emoji">${data.emoji}</span>
+                        <span class="card-char">${char}</span>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            }
+        }
+
+        // 開啟彈窗並載入深層內容
+        function openModal(char) {
+            const data = charData[char];
+            
+            document.getElementById('modalChar').innerText = char;
+            document.getElementById('modalOld').innerText = data.old;
+            document.getElementById('modalStory').innerText = data.story;
+            
+            // 將 \n 換成 <br> 以便在網頁上換行顯示
+            document.getElementById('modalWords').innerHTML = data.words.replace(/\n/g, '<br><br>');
+            
+            document.getElementById('modal').style.display = 'flex';
+            
+            // 開啟時自動讀一次該漢字
+            speak(char);
+        }
+
+        // 關閉彈窗
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            window.speechSynthesis.cancel(); // 關閉時停止發聲
+        }
+
+        // 點擊背景關閉彈窗
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // 朗讀指定文字並過濾掉圖示
+        function speakText(rawText) {
+            // 過濾掉不需朗讀的符號 (如 🔊, 🔍, 👆, 及括號內的提示字)
+            let cleanText = rawText.replace(/[🔊🔍👆]/g, '')
+                                   .replace(/\(㩒我聽故仔\)/g, '')
+                                   .replace(/\(㩒我聽字詞\)/g, '')
+                                   .replace(/字詞變變變：/g, '字詞變變變。')
+                                   .trim();
+            speak(cleanText);
+        }
+
+        // 核心廣東話發聲功能
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                // 播放新聲音前，先停止之前的聲音，避免游標快速移動時聲音重疊
+                window.speechSynthesis.cancel();
+                
+                const msg = new SpeechSynthesisUtterance();
+                msg.text = text;
+                msg.lang = 'zh-HK'; // 設定為廣東話
+                msg.rate = 0.85;     // 語速稍慢
+                window.speechSynthesis.speak(msg);
+            } else {
+                console.log("瀏覽器不支援語音功能");
+            }
+        }
+
+        // 網頁載入時執行
+        window.onload = initCards;
+    </script>
+</body>
+</html>

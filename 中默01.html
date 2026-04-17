@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山水墨韻 - 粵語拼字遊戲</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
+
+        :root {
+            --ink-black: #2c3e50;
+            --paper-bg: #f4f1ea;
+            --accent-red: #a62c2b;
+            --ink-gray: #7f8c8d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--paper-bg);
+            background-image: url('https://www.transparenttextures.com/patterns/rice-paper-2.png');
+            font-family: 'Noto Serif TC', serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--ink-black);
+            overflow-x: hidden;
+        }
+
+        .background-deco {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 35vh;
+            background-image: url('https://images.unsplash.com/photo-1578306850118-206e2faeb014?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: bottom;
+            opacity: 0.15;
+            z-index: -1;
+            mask-image: linear-gradient(to top, black, transparent);
+            -webkit-mask-image: linear-gradient(to top, black, transparent);
+        }
+
+        header {
+            margin-top: 40px;
+            text-align: center;
+            border-bottom: 2px solid var(--ink-black);
+            padding-bottom: 10px;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin: 0;
+            letter-spacing: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        p.subtitle {
+            margin: 5px 0 0 0;
+            font-size: 1.1rem;
+            color: var(--ink-gray);
+            letter-spacing: 2px;
+        }
+
+        .game-container {
+            width: 90%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.65);
+            padding: 40px;
+            margin-top: 30px;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .seal {
+            position: absolute;
+            top: -20px;
+            right: -10px;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--accent-red);
+            color: var(--accent-red);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            font-size: 1rem;
+            transform: rotate(5deg);
+            opacity: 0.85;
+            border-radius: 4px;
+            padding: 5px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .def-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: rgba(0,0,0,0.02);
+            border-left: 4px solid var(--ink-black);
+            padding: 10px 15px;
+        }
+
+        .definition-box {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #444;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .speaker-btn {
+            background: none;
+            border: 2px solid var(--ink-black);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--ink-black);
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .speaker-btn:hover {
+            background: var(--ink-black);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .answer-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            min-height: 70px;
+        }
+
+        .char-slot {
+            width: 60px;
+            height: 60px;
+            border-bottom: 3px solid var(--ink-black);
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-black);
+            font-weight: bold;
+        }
+
+        .options-pool {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .char-btn {
+            width: 65px;
+            height: 65px;
+            background: #fff;
+            border: 1px solid var(--ink-black);
+            font-size: 1.8rem;
+            cursor: pointer;
+            font-family: 'Noto Serif TC', serif;
+            transition: all 0.2s;
+            box-shadow: 3px 3px 0px rgba(44, 62, 80, 0.3);
+            border-radius: 4px;
+        }
+
+        .char-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 4px 6px 0px rgba(166, 44, 43, 0.4);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .char-btn.hidden {
+            visibility: hidden;
+        }
+
+        .message {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            height: 30px;
+            font-weight: bold;
+        }
+
+        .correct-msg { color: var(--ink-black); }
+        .wrong-msg { color: var(--accent-red); }
+
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button.action-btn {
+            padding: 10px 25px;
+            background: transparent;
+            color: var(--ink-black);
+            border: 1px solid var(--ink-black);
+            font-family: 'Noto Serif TC', serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        button.action-btn:hover {
+            background: var(--ink-black);
+            color: white;
+        }
+
+        #next-btn { display: none; }
+
+        .progress {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--ink-gray);
+            letter-spacing: 1px;
+        }
+
+        @keyframes inkFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .fade-in { animation: inkFade 0.6s ease-out forwards; }
+        .shake { animation: shake 0.3s ease-in-out; }
+    </style>
+</head>
+<body>
+
+    <div class="background-deco"></div>
+
+    <header>
+        <h1>墨韻識字 (粵語版)</h1>
+        <p class="subtitle">山水之間，品味文字之美</p>
+    </header>
+
+    <div class="game-container" id="game-box">
+        <div class="seal">雅正</div>
+        
+        <div class="def-wrapper fade-in" id="def-wrapper">
+            <div class="definition-box" id="definition">載入中...</div>
+            <button class="speaker-btn" onclick="readDefinition()" title="朗讀解釋">🔊</button>
+        </div>
+
+        <div class="answer-display" id="answer-display"></div>
+        <div class="options-pool" id="options-pool"></div>
+
+        <div class="message" id="message"></div>
+        
+        <div class="btn-group">
+            <button class="action-btn" id="clear-btn" onclick="clearInput()">重置</button>
+            <button class="action-btn" id="next-btn" onclick="nextQuestion()">下一題</button>
+        </div>
+        
+        <div class="progress" id="progress">卷之：0 / 12</div>
+    </div>
+
+    <script>
+        const wordData = [
+            { word: "倘若", def: "表示假設的連結詞。相當於「如果」、「假使」。" },
+            { word: "驚訝", def: "形容內心感到十分驚奇、詫異。" },
+            { word: "無端", def: "無緣無故；沒有理由、根據。" },
+            { word: "萬水千山", def: "形容路途艱難遙遠。" },
+            { word: "悲哀", def: "內心悲傷、哀痛。" },
+            { word: "歸去", def: "回去，多指回到故鄉或原處。" },
+            { word: "智取", def: "用計謀、智慧來奪取，而非使用蠻力。" },
+            { word: "撒腿", def: "放開步子快跑。" },
+            { word: "天昏地暗", def: "形容天色昏暗，也比喻社會黑暗混亂或情況嚴重。" },
+            { word: "恨之入骨", def: "怨恨到骨髓裡去。形容痛恨到了極點。" },
+            { word: "寸草不生", def: "土地貧瘠，連一點小草都不生長。" },
+            { word: "紋絲不動", def: "一點兒也不動。形容沉著冷靜或極為穩固。" }
+        ];
+
+        let currentIndex = 0;
+        let currentUserInput = [];
+        let currentButtons = [];
+        const synth = window.speechSynthesis;
+
+        window.onload = initGame;
+
+        function initGame() {
+            wordData.sort(() => Math.random() - 0.5);
+            loadWord();
+        }
+
+        /**
+         * 核心發音函式 - 已改為粵語 (zh-HK)
+         */
+        function speakText(text, rate = 0.95) {
+            if ('speechSynthesis' in window) {
+                synth.cancel(); 
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // --- 關鍵修改：設定為粵語 (香港) ---
+                utterance.lang = 'zh-HK'; 
+                
+                utterance.rate = rate; 
+                utterance.pitch = 1.0;
+                synth.speak(utterance);
+            }
+        }
+
+        function readDefinition() {
+            const data = wordData[currentIndex];
+            speakText(data.def, 0.9); 
+        }
+
+        function loadWord() {
+            const data = wordData[currentIndex];
+            const defEl = document.getElementById('definition');
+            const defWrapper = document.getElementById('def-wrapper');
+            const answerDisplay = document.getElementById('answer-display');
+            const optionsPool = document.getElementById('options-pool');
+            const message = document.getElementById('message');
+            const nextBtn = document.getElementById('next-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            
+            currentUserInput = [];
+            currentButtons = [];
+            message.innerText = "";
+            message.className = "message";
+            nextBtn.style.display = "none";
+            clearBtn.style.display = "block";
+            answerDisplay.innerHTML = "";
+            optionsPool.innerHTML = "";
+            
+            defWrapper.classList.remove('fade-in');
+            void defWrapper.offsetWidth; 
+            defWrapper.classList.add('fade-in');
+
+            defEl.innerText = `釋義：「${data.def}」`;
+            document.getElementById('progress').innerText = `卷之：${currentIndex + 1} / ${wordData.length}`;
+
+            // 自動朗讀新題目的解釋
+            setTimeout(() => { readDefinition(); }, 600);
+
+            for (let i = 0; i < data.word.length; i++) {
+                let slot = document.createElement('div');
+                slot.className = 'char-slot';
+                slot.id = 'slot-' + i;
+                answerDisplay.appendChild(slot);
+            }
+
+            let chars = data.word.split('');
+            let shuffledChars = [...chars].sort(() => 0.5 - Math.random());
+
+            shuffledChars.forEach((char, index) => {
+                let btn = document.createElement('button');
+                btn.className = 'char-btn fade-in';
+                btn.style.animationDelay = `${index * 0.1}s`;
+                btn.innerText = char;
+                btn.onclick = () => selectChar(char, btn);
+                optionsPool.appendChild(btn);
+                currentButtons.push({ char: char, element: btn });
+            });
+        }
+
+        function selectChar(char, btnEl) {
+            speakText(char, 1.1); // 點選字塊時發出粵語單字音
+
+            const data = wordData[currentIndex];
+            if (currentUserInput.length < data.word.length) {
+                currentUserInput.push({ char: char, btn: btnEl });
+                btnEl.classList.add('hidden');
+                updateSlots();
+
+                if (currentUserInput.length === data.word.length) {
+                    setTimeout(checkAnswer, 400); 
+                }
+            }
+        }
+
+        function updateSlots() {
+            const data = wordData[currentIndex];
+            for (let i = 0; i < data.word.length; i++) {
+                let slot = document.getElementById('slot-' + i);
+                if (currentUserInput[i]) {
+                    slot.innerText = currentUserInput[i].char;
+                } else {
+                    slot.innerText = "";
+                }
+            }
+        }
+
+        function clearInput() {
+            currentUserInput.forEach(item => {
+                item.btn.classList.remove('hidden');
+            });
+            currentUserInput = [];
+            updateSlots();
+            document.getElementById('message').innerText = "";
+        }
+
+        function checkAnswer() {
+            const data = wordData[currentIndex];
+            const currentWord = currentUserInput.map(item => item.char).join('');
+            const messageEl = document.getElementById('message');
+            const nextBtn = document.getElementById('next-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const gameBox = document.getElementById('game-box');
+
+            if (currentWord === data.word) {
+                messageEl.innerText = "✓ 妙筆生花！答對了！";
+                messageEl.className = "message correct-msg";
+                nextBtn.style.display = "block";
+                clearBtn.style.display = "none";
+                
+                speakText(data.word, 0.85); // 答對時朗讀完整粵語詞語
+            } else {
+                messageEl.innerText = "✗ 筆誤了，請再試一次。";
+                messageEl.className = "message wrong-msg";
+                gameBox.classList.add('shake');
+                
+                speakText("唔啱喔，再試下啦", 1.0); // 粵語錯誤提示
+
+                setTimeout(() => gameBox.classList.remove('shake'), 300);
+                setTimeout(() => { clearInput(); }, 1200);
+            }
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex >= wordData.length) {
+                document.getElementById('definition').innerText = "太棒了！你已完成所有卷宗，學識淵博！";
+                document.getElementById('answer-display').innerHTML = "";
+                document.getElementById('options-pool').innerHTML = "";
+                document.getElementById('message').innerText = "";
+                document.querySelector('.speaker-btn').style.display = "none";
+                document.getElementById('next-btn').style.display = "none";
+                document.getElementById('clear-btn').style.display = "block";
+                document.getElementById('clear-btn').innerText = "重新遊玩";
+                document.getElementById('clear-btn').onclick = () => {
+                    currentIndex = 0;
+                    document.querySelector('.speaker-btn').style.display = "flex";
+                    initGame();
+                };
+                
+                speakText("好犀利啊！你已經完成咗所有挑戰！", 0.9);
+            } else {
+                loadWord();
+            }
+        }
+    </script>
+</body>
+</html>
