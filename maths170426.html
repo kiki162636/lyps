@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瑪利歐數學大冒險</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mario-red: #E52521;
+            --mario-blue: #5C94FC;
+            --mario-green: #00A800;
+            --mario-coin: #F8D820;
+            --brick-color: #C84C0C;
+        }
+
+        body {
+            background-color: var(--mario-blue);
+            font-family: 'Noto Sans TC', sans-serif; /* 主要中文用粗體無黑 */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #333;
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 8px solid black;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive, 'Noto Sans TC';
+            color: var(--mario-red);
+            text-shadow: 2px 2px 0px black;
+            font-size: 24px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .level-indicator {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--mario-green);
+            color: white;
+            padding: 5px 10px;
+            border: 3px solid black;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            background: #f0f0f0;
+            padding: 15px;
+            border: 4px dashed var(--brick-color);
+            border-radius: 10px;
+        }
+
+        input[type="text"] {
+            font-size: 20px;
+            padding: 10px;
+            width: 80%;
+            border: 4px solid black;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+
+        button {
+            font-family: 'Press Start 2P', cursive, 'Noto Sans TC';
+            background-color: var(--mario-red);
+            color: white;
+            border: 4px solid black;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px black;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px black;
+        }
+
+        /* 龍虎榜樣式 */
+        #leaderboard {
+            display: none;
+        }
+        
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .score-table th, .score-table td {
+            border: 2px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        .score-table th {
+            background-color: var(--mario-coin);
+        }
+        .highlight {
+            background-color: #ffeb3b;
+            font-weight: bold;
+            color: var(--mario-red);
+        }
+
+        /* 星星雨特效 */
+        .star {
+            position: absolute;
+            top: -50px;
+            font-size: 30px;
+            color: var(--mario-coin);
+            text-shadow: 2px 2px 0 #000;
+            animation: fall linear forwards;
+            z-index: 100;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="game-ui">
+        <h1>超級數學冒險</h1>
+        <div class="level-indicator">World 1-<span id="level-num">1</span></div>
+        
+        <div class="question-box" id="question-text">
+            載入中...
+        </div>
+
+        <input type="text" id="answer-input" placeholder="輸入答案..." autocomplete="off">
+        <br>
+        <button onclick="checkAnswer()">提交 (Jump!)</button>
+    </div>
+
+    <div class="game-container" id="leaderboard">
+        <h1>🏆 破關龍虎榜 🏆</h1>
+        <p>恭喜你！拯救了數學王國！</p>
+        <p>你的通關時間：<span id="player-time" style="color:var(--mario-red); font-size: 24px;"></span> 秒</p>
+        
+        <table class="score-table">
+            <tr>
+                <th>排名</th>
+                <th>玩家</th>
+                <th>時間 (秒)</th>
+            </tr>
+            <tr><td>1</td><td>Mario</td><td>45</td></tr>
+            <tr><td>2</td><td>Luigi</td><td>58</td></tr>
+            <tr class="highlight"><td>3</td><td>你 (You)</td><td id="lb-player-time"></td></tr>
+            <tr><td>4</td><td>Toad</td><td>120</td></tr>
+            <tr><td>5</td><td>Bowser</td><td>999</td></tr>
+        </table>
+        
+        <button style="margin-top:20px; background-color: var(--mario-green);" onclick="location.reload()">再玩一次</button>
+    </div>
+
+    <script>
+        // 題庫設定 (根據圖片內容)
+        const questions = [
+            { q: "飛機每小時可飛行 476 公里，18 小時共可飛行多少公里？", a: "8568" },
+            { q: "5和14的最小公倍數是甚麼？", a: "70" },
+            { q: "88 × 43 = ?", a: "3784" },
+            { q: "滑浪風帆每小時的租金是 135 元。上星期滑浪風帆共租出了 49 小時，共得租金多少元？", a: "6615" },
+            { q: "624 箱橙，平均分給 12 輛貨車運載，每輛貨車運載橙多少箱？", a: "52" },
+            { q: "牛丸 312 粒，每打裝成一包，共可裝成多少包？", a: "26" },
+            { q: "菲林每卷售22元，叔叔有122元，最多可以買菲林 A 卷，餘下 B 元。<br><br><span style='font-size:14px; color:red;'>*請以「A,B」格式輸入答案，例如: 5,12</span>", a: "5,12" },
+            { q: "下列哪些描述必定正確？<br>I. 兩個相同的等邊三角形可合併成一個菱形。<br>II. 一個菱形可分割成兩個相同的等邊三角形。<br><br><span style='font-size:14px; color:red;'>*請輸入 I 或 II </span>", a: ["I", "1", "i"] }, // 支援羅馬或阿拉伯數字輸入
+            { q: "即食麵每箱有24包，173箱共有多少包？", a: "4152" },
+            { q: "一條長 84 厘米的繩平均分成 21 段，每段長多少厘米？", a: "4" }
+        ];
+
+        let currentLevel = 0;
+        let startTime = 0;
+
+        // 初始化遊戲
+        function initGame() {
+            startTime = Date.now();
+            loadQuestion();
+            
+            // 支援按下 Enter 提交
+            document.getElementById("answer-input").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    checkAnswer();
+                }
+            });
+        }
+
+        // 載入題目
+        function loadQuestion() {
+            document.getElementById("level-num").innerText = currentLevel + 1;
+            document.getElementById("question-text").innerHTML = questions[currentLevel].q;
+            document.getElementById("answer-input").value = "";
+            document.getElementById("answer-input").focus();
+        }
+
+        // 檢查答案
+        function checkAnswer() {
+            let userAnswer = document.getElementById("answer-input").value.trim().replace(/\s+/g, ''); // 移除空格
+            let correctAnswer = questions[currentLevel].a;
+            let isCorrect = false;
+
+            // 處理多種正確答案的情況 (如第8題)
+            if (Array.isArray(correctAnswer)) {
+                if (correctAnswer.includes(userAnswer.toUpperCase())) {
+                    isCorrect = true;
+                }
+            } else {
+                if (userAnswer === correctAnswer) {
+                    isCorrect = true;
+                }
+            }
+
+            if (isCorrect) {
+                createStarRain();
+                currentLevel++;
+                
+                if (currentLevel < questions.length) {
+                    // 延遲一點換題，讓玩家欣賞星星雨
+                    setTimeout(loadQuestion, 800);
+                } else {
+                    setTimeout(showLeaderboard, 1000);
+                }
+            } else {
+                // 答錯 Pop-up 提示與鼓勵
+                alert("🍄 哎呀！好像算錯了！\n\n瑪利歐說：「失敗乃成功之母！深呼吸，再試一次吧！你可以的！」🌟");
+                document.getElementById("answer-input").value = "";
+                document.getElementById("answer-input").focus();
+            }
+        }
+
+        // 顯示龍虎榜
+        function showLeaderboard() {
+            let endTime = Date.now();
+            let timeTaken = Math.floor((endTime - startTime) / 1000);
+            
+            document.getElementById("game-ui").style.display = "none";
+            document.getElementById("leaderboard").style.display = "block";
+            
+            document.getElementById("player-time").innerText = timeTaken;
+            document.getElementById("lb-player-time").innerText = timeTaken;
+            
+            // 星星大爆發慶祝
+            for(let i=0; i<3; i++) {
+                setTimeout(createStarRain, i*500);
+            }
+        }
+
+        // 星星雨特效函數
+        function createStarRain() {
+            const numStars = 30;
+            for (let i = 0; i < numStars; i++) {
+                let star = document.createElement("div");
+                star.innerHTML = "★";
+                star.className = "star";
+                
+                // 隨機位置與動畫時間
+                star.style.left = Math.random() * 100 + "vw";
+                let duration = Math.random() * 2 + 1; // 1秒到3秒
+                star.style.animationDuration = duration + "s";
+                star.style.fontSize = (Math.random() * 20 + 20) + "px"; // 隨機大小
+                
+                document.body.appendChild(star);
+
+                // 動畫結束後移除元素
+                setTimeout(() => {
+                    star.remove();
+                }, duration * 1000);
+            }
+        }
+
+        // 網頁載入後啟動
+        window.onload = initGame;
+    </script>
+</body>
+</html>

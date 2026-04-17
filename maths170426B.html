@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瑪利歐數學大冒險 v3.0 (廣東話語音版)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mario-red: #E52521;
+            --mario-blue: #5C94FC;
+            --mario-green: #00A800;
+            --mario-coin: #F8D820;
+            --brick-color: #C84C0C;
+        }
+
+        body {
+            background-color: var(--mario-blue);
+            font-family: 'Noto Sans TC', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #333;
+        }
+
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 8px solid black;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 18px !important; }
+            .game-container { padding: 15px; border-width: 4px; }
+            .question-box { font-size: 16px !important; }
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive, 'Noto Sans TC';
+            color: var(--mario-red);
+            text-shadow: 2px 2px 0px black;
+            font-size: 24px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .level-indicator {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--mario-green);
+            color: white;
+            padding: 5px 10px;
+            border: 3px solid black;
+        }
+
+        .lives-indicator {
+            font-size: 20px;
+            letter-spacing: 5px;
+        }
+
+        .question-box {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            background: #f0f0f0;
+            padding: 15px;
+            border: 4px dashed var(--brick-color);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        /* 朗讀按鈕樣式 */
+        .speak-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px;
+            box-shadow: none;
+            transition: transform 0.1s;
+        }
+        .speak-btn:active {
+            transform: scale(0.9);
+            box-shadow: none;
+        }
+
+        input[type="text"] {
+            font-size: 20px;
+            padding: 10px;
+            width: 80%;
+            border: 4px solid black;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+
+        button {
+            font-family: 'Press Start 2P', cursive, 'Noto Sans TC';
+            background-color: var(--mario-red);
+            color: white;
+            border: 4px solid black;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px black;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px black;
+        }
+
+        #game-ui, #leaderboard, #game-over {
+            display: none;
+        }
+        
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .score-table th, .score-table td {
+            border: 2px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        .score-table th {
+            background-color: var(--mario-coin);
+        }
+        .highlight {
+            background-color: #ffeb3b;
+            font-weight: bold;
+            color: var(--mario-red);
+        }
+
+        .star {
+            position: absolute;
+            top: -50px;
+            font-size: 30px;
+            color: var(--mario-coin);
+            text-shadow: 2px 2px 0 #000;
+            animation: fall linear forwards;
+            z-index: 100;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="start-screen">
+        <h1>超級數學冒險</h1>
+        <p style="font-size: 18px; line-height: 1.8;">
+            🍄 歡迎來到數學王國！<br>
+            請打開喇叭，聽住提示過關啦！
+        </p>
+        <button onclick="startGame()">開始遊戲 (Start!)</button>
+    </div>
+
+    <div class="game-container" id="game-ui">
+        <h1>超級數學冒險</h1>
+        
+        <div class="status-bar">
+            <div class="level-indicator">World 1-<span id="level-num">1</span></div>
+            <div class="lives-indicator" id="lives-display">❤️❤️❤️</div>
+        </div>
+        
+        <div class="question-box">
+            <button class="speak-btn" onclick="readCurrentQuestion()" title="重聽題目">🔊</button>
+            <div id="question-text">載入中...</div>
+        </div>
+        
+        <input type="text" id="answer-input" placeholder="輸入答案..." autocomplete="off">
+        <br>
+        <button onclick="checkAnswer()">提交 (Jump!)</button>
+    </div>
+
+    <div class="game-container" id="game-over">
+        <h1>💀 GAME OVER 💀</h1>
+        <p>哎呀！生命值耗盡了...</p>
+        <p>庫巴把公主抓走了！</p>
+        <button style="margin-top:20px; background-color: #555;" onclick="location.reload()">重新挑戰</button>
+    </div>
+
+    <div class="game-container" id="leaderboard">
+        <h1>🏆 破關龍虎榜 🏆</h1>
+        <p>恭喜你！拯救了數學王國！</p>
+        <p>你的通關時間：<span id="player-time" style="color:var(--mario-red); font-size: 24px;"></span> 秒</p>
+        
+        <table class="score-table">
+            <tr><th>排名</th><th>玩家</th><th>時間 (秒)</th></tr>
+            <tr><td>1</td><td>Mario</td><td>45</td></tr>
+            <tr><td>2</td><td>Luigi</td><td>58</td></tr>
+            <tr class="highlight"><td>3</td><td>你 (You)</td><td id="lb-player-time"></td></tr>
+            <tr><td>4</td><td>Toad</td><td>120</td></tr>
+            <tr><td>5</td><td>Bowser</td><td>999</td></tr>
+        </table>
+        
+        <button style="margin-top:20px; background-color: var(--mario-green);" onclick="location.reload()">再玩一次</button>
+    </div>
+
+    <script>
+        // --- Web Speech API (廣東話語音) ---
+        function playVoice(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // 停止上一句話
+                let msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'zh-HK'; // 設定為香港廣東話
+                msg.rate = 0.9;     // 語速稍微放慢一點點，讓小朋友聽清楚
+                msg.pitch = 1.1;    // 音調稍微高一點，聽起來比較有活力
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        // --- Web Audio API (音效合成器) ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playCoinSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.1);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+            osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function playWrongSound() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        // --- 遊戲邏輯 ---
+        const questions = [
+            { q: "飛機每小時可飛行 476 公里，18 小時共可飛行多少公里？", a: "8568" },
+            { q: "5和14的最小公倍數是甚麼？", a: "70" },
+            { q: "88 × 43 = ?", a: "3784" },
+            { q: "滑浪風帆每小時的租金是 135 元。上星期滑浪風帆共租出了 49 小時，共得租金多少元？", a: "6615" },
+            { q: "624 箱橙，平均分給 12 輛貨車運載，每輛貨車運載橙多少箱？", a: "52" },
+            { q: "牛丸 312 粒，每打裝成一包，共可裝成多少包？", a: "26" },
+            { q: "菲林每卷售22元，叔叔有122元，最多可以買菲林 A 卷，餘下 B 元。<br><br><span style='font-size:14px; color:red;'>*請以「A,B」格式輸入答案，例如: 5,12</span>", a: "5,12", 
+              speakText: "菲林每卷售22元，叔叔有122元，最多可以買菲林 A 卷，餘下 B 元。請以 A 逗號 B 的格式輸入答案。" }, // 針對這題自訂朗讀文字
+            { q: "下列哪些描述必定正確？<br>I. 兩個相同的等邊三角形可合併成一個菱形。<br>II. 一個菱形可分割成兩個相同的等邊三角形。<br><br><span style='font-size:14px; color:red;'>*請輸入 I 或 II </span>", a: ["I", "1"],
+              speakText: "下列哪些描述必定正確？第一：兩個相同的等邊三角形可合併成一個菱形。第二：一個菱形可分割成兩個相同的等邊三角形。請輸入第一或第二的羅馬數字。" }, // 自訂朗讀文字
+            { q: "即食麵每箱有24包，173箱共有多少包？", a: "4152" },
+            { q: "一條長 84 厘米的繩平均分成 21 段，每段長多少厘米？", a: "4" }
+        ];
+
+        let currentLevel = 0;
+        let startTime = 0;
+        let lives = 3;
+
+        // 點擊開始遊戲
+        function startGame() {
+            initAudio(); // 初始化音效引擎
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("game-ui").style.display = "block";
+            playVoice("超級數學冒險，準備開始！");
+            
+            startTime = Date.now();
+            updateLivesDisplay();
+            
+            setTimeout(loadQuestion, 1500); // 等歡迎語音說完再載入題目
+
+            // 支援 Enter 提交
+            document.getElementById("answer-input").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    checkAnswer();
+                }
+            });
+        }
+
+        function updateLivesDisplay() {
+            document.getElementById("lives-display").innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+        }
+
+        function loadQuestion() {
+            document.getElementById("level-num").innerText = currentLevel + 1;
+            document.getElementById("question-text").innerHTML = questions[currentLevel].q;
+            document.getElementById("answer-input").value = "";
+            document.getElementById("answer-input").focus();
+            
+            readCurrentQuestion();
+        }
+
+        // 朗讀當前題目
+        function readCurrentQuestion() {
+            let qObj = questions[currentLevel];
+            // 如果有自訂的朗讀文字就用自訂的，否則自動把 HTML 標籤清掉朗讀
+            let textToSpeak = qObj.speakText ? qObj.speakText : qObj.q.replace(/<[^>]*>?/gm, '');
+            playVoice(textToSpeak);
+        }
+
+        function checkAnswer() {
+            let userAnswer = document.getElementById("answer-input").value
+                .trim()
+                .toUpperCase()
+                .replace(/\s+/g, '')
+                .replace(/[！-～]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xfee0)); 
+
+            let correctAnswer = questions[currentLevel].a;
+            let isCorrect = false;
+
+            if (Array.isArray(correctAnswer)) {
+                if (correctAnswer.includes(userAnswer)) isCorrect = true;
+            } else {
+                if (userAnswer === correctAnswer) isCorrect = true;
+            }
+
+            if (isCorrect) {
+                playCoinSound();
+                playVoice("好嘢！答啱啦！");
+                createStarRain();
+                currentLevel++;
+                
+                if (currentLevel < questions.length) {
+                    setTimeout(loadQuestion, 1500); // 留時間播音效
+                } else {
+                    setTimeout(showLeaderboard, 1500);
+                }
+            } else {
+                playWrongSound();
+                lives--;
+                updateLivesDisplay();
+                
+                if (lives > 0) {
+                    playVoice(`哎呀，錯咗喎！扣一條命，你仲有 ${lives} 次機會。再試下啦！`);
+                    document.getElementById("answer-input").value = "";
+                    document.getElementById("answer-input").focus();
+                } else {
+                    showGameOver();
+                }
+            }
+        }
+
+        function showGameOver() {
+            playVoice("Game Over！庫巴捉走咗公主啦！下次再努力啦！");
+            document.getElementById("game-ui").style.display = "none";
+            document.getElementById("game-over").style.display = "block";
+        }
+
+        function showLeaderboard() {
+            let endTime = Date.now();
+            let timeTaken = Math.floor((endTime - startTime) / 1000);
+            
+            playVoice(`恭喜曬！你贏咗啦！你用咗 ${timeTaken} 秒過關！`);
+
+            document.getElementById("game-ui").style.display = "none";
+            document.getElementById("leaderboard").style.display = "block";
+            
+            document.getElementById("player-time").innerText = timeTaken;
+            document.getElementById("lb-player-time").innerText = timeTaken;
+            
+            for(let i=0; i<3; i++) {
+                setTimeout(createStarRain, i*500);
+            }
+        }
+
+        function createStarRain() {
+            const numStars = 30;
+            for (let i = 0; i < numStars; i++) {
+                let star = document.createElement("div");
+                star.innerHTML = "★";
+                star.className = "star";
+                star.style.left = Math.random() * 100 + "vw";
+                let duration = Math.random() * 2 + 1;
+                star.style.animationDuration = duration + "s";
+                star.style.fontSize = (Math.random() * 20 + 20) + "px";
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), duration * 1000);
+            }
+        }
+    </script>
+</body>
+</html>
