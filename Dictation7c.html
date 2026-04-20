@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚔️ K-POP DEMON HUNTER: DEFINITIVE EDITION ⚔️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
+        :root {
+            --neon-pink: #ff2a85;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #b5179e;
+            --dark-bg: #0b0914;
+            --card-bg: rgba(20, 15, 35, 0.9);
+        }
+
+        body {
+            font-family: 'Montserrat', "Microsoft JhengHei", sans-serif;
+            background: #000 url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hunter-card {
+            max-width: 850px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .stage-header {
+            text-align: center;
+            border-bottom: 4px double var(--neon-pink);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+
+        .section {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--neon-purple);
+            transition: 0.3s;
+        }
+
+        .section:hover { box-shadow: 0 0 10px rgba(0, 243, 255, 0.1); }
+
+        h2 { color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 2px; margin-top: 0; }
+
+        .btn-hunt {
+            background: transparent;
+            color: var(--neon-pink);
+            border: 2px solid var(--neon-pink);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .btn-hunt:hover { background: var(--neon-pink); color: white; box-shadow: 0 0 15px var(--neon-pink); }
+        .btn-hunt:disabled { border-color: #555; color: #555; cursor: not-allowed; box-shadow: none !important; }
+
+        .cooldown {
+            display: none;
+            color: var(--neon-cyan);
+            font-weight: bold;
+            margin-left: 15px;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--neon-cyan);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        input, textarea {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #444;
+            color: var(--neon-cyan);
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus { border-color: var(--neon-pink); outline: none; background: rgba(255,255,255,0.1); }
+
+        .submit-gate {
+            width: 100%;
+            padding: 25px;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 900;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        .submit-gate:hover { box-shadow: 0 0 25px var(--neon-pink); }
+
+        #result-ui { display: none; text-align: center; }
+        .rank-text { font-size: 6rem; font-weight: 900; margin: 10px 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+
+<div class="hunter-card" id="main-ui">
+    <div class="stage-header">
+        <h1>🎤 K-POP DEMON HUNTER ⚔️</h1>
+        <p>MISSION: P.4 DICTATION (2) | FINAL STABILIZED VER.</p>
+    </div>
+
+    <div class="section">
+        <h2>Target A: Vocabulary</h2>
+        <button class="btn-hunt" id="btnA" onclick="playA()">▶ Initiate Audio</button>
+        <span id="timerA" class="cooldown"></span>
+        <div class="input-grid" id="gridA"></div>
+    </div>
+
+    <div class="section" style="border-left-color: var(--neon-pink);">
+        <h2 style="color: var(--neon-pink);">Target B: Seen Dictation</h2>
+        <button class="btn-hunt" style="color:var(--neon-pink); border-color:var(--neon-pink);" id="btnB" onclick="playB()">▶ Initiate Audio</button>
+        <span id="timerB" class="cooldown"></span>
+        <textarea id="ansB" style="height: 150px; margin-top:15px;" placeholder="Scanning text input..."></textarea>
+    </div>
+
+    <div class="section" style="border-left-color: #f1c40f;">
+        <h2 style="color: #f1c40f;">Target C: Recitation (背默)</h2>
+        <p style="font-size: 0.8rem; color: #888;">💡 憑記憶輸入咒語，或點擊播放按鈕進行複習聽寫：</p>
+        <button class="btn-hunt" style="color:#f1c40f; border-color:#f1c40f;" id="btnC" onclick="playC()">▶ Initiate Audio</button>
+        <span id="timerC" class="cooldown"></span>
+        <div style="margin-top:15px; margin-bottom:10px;">
+            1. <input type="text" id="ansC1" placeholder="When Amy was six...">
+        </div>
+        <div>
+            2. <input type="text" id="ansC2" placeholder="I could comb my hair...">
+        </div>
+    </div>
+
+    <div class="section" style="border-left-color: var(--neon-cyan);">
+        <h2>Target D: Fun Dictation</h2>
+        <button class="btn-hunt" id="btnD" onclick="playD()">▶ Initiate Audio</button>
+        <span id="timerD" class="cooldown"></span>
+        <div class="input-grid" id="gridD"></div>
+    </div>
+
+    <button class="submit-gate" onclick="finishMission()">🏁 FINISH MISSION 🏁</button>
+</div>
+
+<div class="hunter-card" id="result-ui">
+    <h2>Mission Analysis Report</h2>
+    <div class="rank-text" id="rank-display">S</div>
+    <div id="score-details" style="text-align: left; line-height: 2; font-size: 1.2rem;"></div>
+    <button class="btn-hunt" style="margin-top:20px" onclick="location.reload()">↺ Retry Stage</button>
+</div>
+
+<script>
+    const data = {
+        A: ["make the bed", "feed my pet", "get dressed", "tidy my room", "bake cookies", "lunch box", "shoelaces", "walk to school", "ourselves", "themselves", "yourself", "suddenly", "different", "smart", "surprised"],
+        B: "Andy and his mum had lunch at Tang's Congee Shop yesterday. Mr Tang's dad opened the shop in 1950 when Mr Tang was five. They worked hard in the shop every day. Mr Tang helped out at the shop every day. He could cook congee by himself when he was ten. His sister could work out the change by herself. 'Well, I can play the sushi-making game on my tablet by myself!' Andy said.",
+        BChunks: ["Andy and his mum", "had lunch at Tang's Congee Shop yesterday.", "Mr Tang's dad opened the shop in 1950", "when Mr Tang was five.", "They worked hard in the shop", "every day.", "Mr Tang helped out at the shop", "every day.", "He could cook congee by himself", "when he was ten.", "His sister could work out the change", "by herself.", "Well, I can play the sushi-making game", "on my tablet by myself!", "Andy said."],
+        C: ["When Amy was six, she could pack her school bag by herself.", "I could comb my hair by myself when I was four."],
+        D: ["confused", "worried", "interested", "delighted", "bored", "annoyed"]
+    };
+
+    let isTesting = true;
+    window.utterances = []; // 關鍵！掛載在 window 下防 Garbage Collection 導致消音
+
+    // 終極防斷音/防死鎖發聲函數
+    function speakNow(text, rate = 0.8) {
+        return new Promise(resolve => {
+            if (!isTesting) return resolve();
+            
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'en-US';
+            utter.rate = rate;
+            
+            utter.onend = () => {
+                const idx = window.utterances.indexOf(utter);
+                if (idx > -1) window.utterances.splice(idx, 1);
+                resolve();
+            };
+            utter.onerror = () => {
+                const idx = window.utterances.indexOf(utter);
+                if (idx > -1) window.utterances.splice(idx, 1);
+                resolve();
+            };
+            
+            window.utterances.push(utter); // 鎖定防回收
+
+            // 解決 Chrome 15秒自動消音的 Bug
+            const keepAlive = setInterval(() => {
+                if (!window.speechSynthesis.speaking) {
+                    clearInterval(keepAlive);
+                } else {
+                    window.speechSynthesis.pause();
+                    window.speechSynthesis.resume();
+                }
+            }, 5000);
+
+            window.speechSynthesis.speak(utter);
+        });
+    }
+
+    async function cd(sec, id) {
+        const el = document.getElementById(id);
+        el.style.display = 'inline';
+        for (let i = sec; i > 0; i--) {
+            if (!isTesting) break;
+            el.innerText = `⏳ CD: ${i}s`;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        el.style.display = 'none';
+    }
+
+    async function playA() {
+        window.speechSynthesis.cancel(); // 點擊當下立刻清空隊列並激活
+        await speakNow("Target A. Ready.", 0.8);
+        document.getElementById('btnA').disabled = true;
+        for (let i = 0; i < data.A.length; i++) {
+            if(!isTesting) break;
+            await speakNow(`Number ${i+1}: ${data.A[i]}`);
+            await cd(20, 'timerA');
+            if(!isTesting) break;
+            await speakNow(`Repeat: ${data.A[i]}`);
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+
+    async function playB() {
+        window.speechSynthesis.cancel();
+        await speakNow("Target B. Ready.", 0.8);
+        document.getElementById('btnB').disabled = true;
+        for (let chunk of data.BChunks) {
+            if(!isTesting) break;
+            await speakNow(chunk);
+            await cd(10, 'timerB');
+            if(!isTesting) break;
+            await speakNow(chunk);
+            await new Promise(r => setTimeout(r, 1500));
+        }
+        if (isTesting) {
+            await speakNow("Scanning full recording.");
+            await speakNow(data.B, 0.75);
+        }
+    }
+
+    async function playC() {
+        window.speechSynthesis.cancel();
+        await speakNow("Target C. Ready.", 0.8);
+        document.getElementById('btnC').disabled = true;
+        for (let i = 0; i < data.C.length; i++) {
+            if(!isTesting) break;
+            await speakNow(`Sentence ${i+1}:`);
+            await speakNow(data.C[i], 0.75);
+            await cd(15, 'timerC');
+            if(!isTesting) break;
+            await speakNow(`Repeat Sentence ${i+1}:`);
+            await speakNow(data.C[i], 0.75);
+            await new Promise(r => setTimeout(r, 3000));
+        }
+    }
+
+    async function playD() {
+        window.speechSynthesis.cancel();
+        await speakNow("Target D. Ready.", 0.8);
+        document.getElementById('btnD').disabled = true;
+        for (let i = 0; i < data.D.length; i++) {
+            if(!isTesting) break;
+            await speakNow(`Bonus ${i+1}: ${data.D[i]}`);
+            await cd(20, 'timerD');
+            if(!isTesting) break;
+            await speakNow(data.D[i]);
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+
+    window.onload = () => {
+        const gridA = document.getElementById('gridA');
+        data.A.forEach((_, i) => gridA.insertAdjacentHTML('beforeend', `<input type="text" id="a-${i}" placeholder="Target ${i+1}">`));
+        const gridD = document.getElementById('gridD');
+        data.D.forEach((_, i) => gridD.insertAdjacentHTML('beforeend', `<input type="text" id="d-${i}" placeholder="Bonus ${i+1}">`));
+    };
+
+    function clean(s) {
+        return (s || "").toLowerCase().replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ").trim();
+    }
+
+    function finishMission() {
+        if (!confirm("Are you sure you want to clear the stage? (確定交卷嗎？)")) return;
+        
+        isTesting = false;
+        window.speechSynthesis.cancel();
+        
+        let scoreA = 0, scoreB = 0, scoreC = 0, scoreD = 0;
+        
+        // Check A
+        data.A.forEach((ans, i) => { if(clean(document.getElementById(`a-${i}`).value) === clean(ans)) scoreA++; });
+        
+        // Check B
+        const userB = clean(document.getElementById('ansB').value).split(' ').filter(w => w.length > 0);
+        const targetB = clean(data.B).split(' ').filter(w => w.length > 0);
+        if(userB.length > 0) {
+            let matchesB = userB.filter(w => targetB.includes(w)).length;
+            scoreB = Math.round((matchesB / targetB.length) * 40);
+        }
+
+        // Check C
+        if(clean(document.getElementById('ansC1').value) === clean(data.C[0])) scoreC += 10;
+        if(clean(document.getElementById('ansC2').value) === clean(data.C[1])) scoreC += 10;
+
+        // Check D
+        data.D.forEach((ans, i) => { if(clean(document.getElementById(`d-${i}`).value) === clean(ans)) scoreD += 5; });
+
+        const total = Math.min(100, Math.round((scoreA/data.A.length*40) + scoreB + scoreC)) + scoreD;
+        
+        document.getElementById('main-ui').style.display = 'none';
+        document.getElementById('result-ui').style.display = 'block';
+        
+        const rank = document.getElementById('rank-display');
+        if(total >= 100) { rank.innerText = "SSS"; rank.style.color = "#f1c40f"; }
+        else if(total >= 90) { rank.innerText = "S"; rank.style.color = "var(--neon-cyan)"; }
+        else if(total >= 70) { rank.innerText = "A"; rank.style.color = "#00ff88"; }
+        else { rank.innerText = "B"; rank.style.color = "var(--neon-pink)"; }
+
+        document.getElementById('score-details').innerHTML = `
+            <p>💥 <b>Total Battle Power:</b> ${total} PT</p>
+            <p>🎯 <b>Vocab Accuracy:</b> ${scoreA} / ${data.A.length} (Max 40PT)</p>
+            <p>📖 <b>Seen Dictation Match:</b> ${scoreB} / 40 PT</p>
+            <p>🧠 <b>Recitation Success:</b> ${scoreC} / 20 PT</p>
+            <p>🔥 <b>Bonus Hunter:</b> +${scoreD} PT</p>
+        `;
+    }
+</script>
+</body>
+</html>
