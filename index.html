@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiikawa 的可愛世界 - 首頁</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream-bg: #fffdf5;
+            --pastel-pink: #ffeef8;
+            --pastel-blue: #e8faff;
+            --chiikawa-pink: #f9a8d4;
+            --hachiware-blue: #38bdf8;
+            --usagi-yellow: #fde047;
+            --text-color: #554a43;
+            --apple-red: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            /* 奶油色可愛背景 */
+            background-color: var(--cream-bg);
+            /* 加入一些可愛的漂浮愛心和星星 */
+            background-image: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="10" y="30" font-size="20">💖</text><text x="70" y="80" font-size="15">✨</text><text x="40" y="60" font-size="10">🌸</text></svg>'),
+                radial-gradient(var(--pastel-blue), var(--cream-bg) 70%);
+            background-repeat: repeat, no-repeat;
+            background-size: 200px 200px, cover;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 頂部標題區域 */
+        header {
+            margin-top: 60px;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--chiikawa-pink);
+            text-shadow: 2px 2px 0px white, 4px 4px 0px rgba(249, 168, 212, 0.3);
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #887a71;
+            margin-top: 10px;
+        }
+
+        /* 可愛的小插圖 (使用 SVG，不需外部檔案) */
+        .header-illustration {
+            position: absolute;
+            top: -40px;
+            left: -50px;
+            width: 80px;
+            height: 80px;
+            transform: rotate(-10deg);
+        }
+
+        /* 用於展示插圖的 SVG */
+        .header-illustration svg { width: 100%; height: 100%; }
+
+        /* 閃爍文字 (更可愛的版本) */
+        .splash-text {
+            color: var(--hachiware-blue);
+            font-size: 0.8rem;
+            margin-left: 10px;
+            display: inline-block;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
+        }
+
+        /* 選單容器 */
+        .menu-container {
+            width: 90%;
+            max-width: 450px;
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 蘋果圖標按鈕 */
+        .apple-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .apple-btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            background-color: var(--pastel-pink);
+            border: 5px solid white;
+            border-radius: 100px; /* 圓潤圓形 */
+            padding: 10px;
+            box-shadow: 6px 6px 0px rgba(249, 168, 212, 0.2);
+            position: relative;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* 蘋果圖標 (使用 CSS 和 SVG) */
+        .apple-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--apple-red);
+            border: 3px solid white;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            box-shadow: 3px 3px 0px rgba(239, 68, 68, 0.2);
+        }
+        
+        /* 蘋果的梗 */
+        .apple-icon::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 15px;
+            background-color: #a16207; /* 棕色梗 */
+            border: 2px solid white;
+            border-radius: 5px;
+        }
+        
+        /* 蘋果的葉子 */
+        .apple-icon::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 20%;
+            width: 20px;
+            height: 10px;
+            background-color: var(--mario-green); /* 綠色葉子 */
+            border: 2px solid white;
+            border-radius: 100px;
+            transform: rotate(-30deg);
+        }
+
+        .apple-btn .apple-svg { width: 30px; height: 30px; fill: white; }
+
+        .btn-text {
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        /* 懸停效果：蘋果變紅，按鈕變藍 */
+        .apple-link:hover .apple-btn {
+            background-color: var(--pastel-blue);
+            border-color: var(--hachiware-blue);
+            color: white;
+            transform: scale(1.02);
+            box-shadow: 8px 8px 0px rgba(56, 189, 248, 0.1);
+        }
+
+        .apple-link:hover .apple-icon {
+            background-color: var(--hachiware-blue);
+            border-color: white;
+            box-shadow: 4px 4px 0px rgba(56, 189, 248, 0.2);
+        }
+
+        .apple-link:hover .btn-text {
+            color: var(--hachiware-blue);
+        }
+
+        /* 按下按鈕 */
+        .apple-link:active {
+            transform: scale(0.98);
+        }
+
+        /* 空位備註 (可愛版) */
+        .placeholder {
+            border: 3px dashed var(--pastel-pink);
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #b5aaa3;
+            text-align: center;
+            margin-top: 10px;
+            border-radius: 20px;
+            background-color: rgba(255, 238, 248, 0.3);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            font-size: 0.7rem;
+            color: #a59a93;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-illustration">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="40" fill="white" stroke="#f9a8d4" stroke-width="5"/>
+                <circle cx="35" cy="45" r="5" fill="#554a43"/>
+                <circle cx="65" cy="45" r="5" fill="#554a43"/>
+                <path d="M 40 65 Q 50 75 60 65" stroke="#554a43" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <path d="M 30 15 L 45 30 L 35 30 Z" fill="#f9a8d4" stroke="white" stroke-width="2"/>
+                <path d="M 70 15 L 55 30 L 65 30 Z" fill="#f9a8d4" stroke="white" stroke-width="2"/>
+            </svg>
+        </div>
+        <h1>CHIIKAWA<br>可愛世界💖</h1>
+        <div class="subtitle">歡迎來到我的網界，快啲揀一個蘋果圖標啦！<span class="splash-text">超級無敵可愛! ✨</span></div>
+    </header>
+
+    <div class="menu-container">
+        
+        <a href="file:///C:/Users/destemp04/Desktop/P4Math_S01.html" class="apple-link">
+            <div class="apple-btn">
+                <div class="apple-icon">
+                    <svg class="apple-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 50 20 Q 70 15 90 20 Q 95 30 90 60 Q 70 95 50 90 Q 30 95 10 60 Q 5 30 10 20 Q 30 15 50 20 Z" />
+                    </svg>
+                </div>
+                <span class="btn-text">數學遊戲大冒險 🍎</span>
+            </div>
+        </a>
+        
+        <a href="#Dictation7c.html" class="apple-link">
+            <div class="apple-btn">
+                <div class="apple-icon">
+                    <svg class="apple-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 50 20 Q 70 15 90 20 Q 95 30 90 60 Q 70 95 50 90 Q 30 95 10 60 Q 5 30 10 20 Q 30 15 50 20 Z" />
+                    </svg>
+                </div>
+                <span class="btn-text">Dictation :D🍎</span>
+            </div>
+        </a>
+        
+        <a href="#" class="apple-link">
+            <div class="apple-btn">
+                <div class="apple-icon">
+                    <svg class="apple-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 50 20 Q 70 15 90 20 Q 95 30 90 60 Q 70 95 50 90 Q 30 95 10 60 Q 5 30 10 20 Q 30 15 50 20 Z" />
+                    </svg>
+                </div>
+                <span class="btn-text">我的作品集 🍎</span>
+            </div>
+        </a>
+
+        <div class="placeholder">--- 下方可繼續新增連結 ---</div>
+        
+        <a href="https://www.google.com" target="_blank" class="apple-link">
+            <div class="apple-btn">
+                <div class="apple-icon">
+                    <svg class="apple-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 50 20 Q 7
