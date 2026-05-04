@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Alyssa 第八次默書挑戰 🌸</title>
+    <style>
+        body {
+            background-color: #fff0f5; 
+            font-family: "微軟正黑體", "Comic Sans MS", sans-serif;
+            color: #5a4a42;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px; 
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: 4px dashed #ffb6c1;
+        }
+        h1 { color: #ff69b4; font-size: 32px; margin-bottom: 5px; }
+        h2 { color: #5a4a42; font-size: 20px; margin-top: 0; }
+        .chiikawa-decor { font-size: 40px; margin: 10px 0; }
+        
+        button {
+            background-color: #87cefa;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 35px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+        button:hover { background-color: #00bfff; transform: scale(1.05); }
+        button:active { transform: scale(0.95); }
+        button:disabled { background-color: #d3d3d3; cursor: not-allowed; }
+
+        .status-box {
+            background-color: #ffffe0;
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff8c00;
+            margin: 20px 0;
+            min-height: 40px;
+        }
+
+        .answers-section {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .big-text {
+            font-size: 2.2em; /* 放大一倍以上，方便核對 */
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px dashed #87cefa;
+        }
+
+        .mask-box {
+            background-color: #ffe4e1;
+            border: 3px dashed #ffb6c1;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            color: #d87093;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 15px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .timer-progress {
+            width: 0%;
+            height: 100%;
+            background-color: #ff69b4;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="chiikawa-decor">🐹🐰🐻</div>
+    <h1>🌸 Alyssa 默書挑戰 🌸</h1>
+    <h2>四年級下學期 第八次默書</h2>
+    
+    <div class="status-box" id="statusText">Alyssa 準備好未呀？禁下面開始啦！</div>
+    
+    <div class="timer-bar">
+        <div class="timer-progress" id="timerProgress"></div>
+    </div>
+
+    <div>
+        <button id="startBtn" onclick="startDictation()">▶️ 開始默書 (加油!)</button>
+        <button id="showBtn" onclick="toggleAnswers()">👀 對答案 (默完先准睇!)</button>
+    </div>
+
+    <!-- 詞語核對區 -->
+    <div id="vocabArea" class="answers-section">
+        <h2 style="color: #ff69b4; text-align: center; font-size: 28px;">一、詞語核對 (12選10)</h2>
+        <div class="big-text">
+            1. 感應 &nbsp; 2. 效能 &nbsp; 3. 品質<br>
+            4. 結晶 &nbsp; 5. 支援 &nbsp; 6. 繁複<br>
+            7. 傳統 &nbsp; 8. 刺激 &nbsp; 9. 節省<br>
+            10. 輔助 &nbsp; 11. 普及 &nbsp; 12. 靈活自如
+        </div>
+    </div>
+
+    <!-- 讀默核對區 -->
+    <div id="poemArea" class="answers-section" style="margin-top: 30px;">
+        <h2 style="color: #20b2aa; text-align: center; font-size: 28px;">二、讀默核對《虛擬實境的應用》</h2>
+        <div id="poemMask" class="mask-box">🙈 內容遮住咗！<br><span style="font-size:18px;">努力默完，點擊「對答案」解鎖</span></div>
+        <div id="poemText" class="big-text" style="display:none;">
+            近年，虛擬實境的技術越來越成熟，不少範疇如娛樂、教育、醫學等都應用這項技術，以提升產品或服務的質量。<br><br>
+            總括而言，虛擬實境能廣泛地應用在不同領域。我們應該多了解日新月異的科技發展，繼而把科技的用途進一步發揮，貢獻社會，這將是世界公民之福。
+        </div>
+    </div>
+</div>
+
+<script>
+    const words = ["感應", "效能", "品質", "結晶", "支援", "繁複", "傳統", "刺激", "節省", "輔助", "普及", "靈活自如"];
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
+    function speak(text) {
+        return new Promise(resolve => {
+            const ut = new SpeechSynthesisUtterance(text);
+            ut.lang = 'zh-HK';
+            ut.rate = 0.8; // 語速慢一點
+            ut.onend = resolve;
+            window.speechSynthesis.speak(ut);
+        });
+    }
+
+    async function runTimer(sec) {
+        const bar = document.getElementById('timerProgress');
+        bar.style.transition = 'none'; bar.style.width = '0%';
+        await delay(50);
+        bar.style.transition = `width ${sec}s linear`; bar.style.width = '100%';
+        await delay(sec * 1000);
+    }
+
+    function toggleAnswers() {
+        const v = document.getElementById('vocabArea');
+        const pT = document.getElementById('poemText');
+        const pM = document.getElementById('poemMask');
+        const s = document.getElementById('poemArea');
+
+        if (v.style.display === 'none' || v.style.display === '') {
+            v.style.display = 'block';
+            s.style.display = 'block';
+            pT.style.display = 'block';
+            pM.style.display = 'none';
+        } else {
+            v.style.display = 'none';
+            s.style.display = 'none';
+            pT.style.display = 'none';
+            pM.style.display = 'block';
+        }
+    }
+
+    async function startDictation() {
+        // 解鎖 iOS 語音
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+        
+        const btn = document.getElementById('startBtn');
+        const status = document.getElementById('statusText');
+        btn.disabled = true;
+
+        // 隨機選10個
+        const shuffled = [...words].sort(() => 0.5 - Math.random()).slice(0, 10);
+
+        try {
+            status.innerText = "🚀 Alyssa 加油！默書開始！";
+            await speak("Alyssa，第八次默書挑戰開始喇！預備好未？我地先默詞語。");
+            await delay(1500);
+
+            for (let i = 0; i < shuffled.length; i++) {
+                status.innerText = `🌟 第 ${i + 1} 題：${shuffled[i]}`;
+                await speak(`第${i + 1}題。`);
+                await speak(shuffled[i]);
+                await delay(2000);
+                
+                status.innerText = `💡 第 ${i + 1} 題 (重讀一次)`;
+                await speak(shuffled[i]);
+                
+                status.innerText = `⏳ 努力寫緊... (仲有 15 秒)`;
+                await Promise.all([runTimer(15), speak("唔好急，寫靚啲呀。")]);
+            }
+
+            status.innerText = "✨ 詞語默完喇！準備默課文！";
+            await speak("真係好叻呀！詞語默完喇。而家準備讀默，第四課，虛擬實境的應用。我會讀一段，你默一段，加油呀！");
+            
+            status.innerText = "📖 請默出讀默部分內容...";
+            // 讀默部分通常是自己背或家長讀，這裡可以放一段鼓勵的話
+            await delay(2000);
+            await speak("慢慢默，默完記得檢查有無寫錯字呀。");
+
+        } catch (e) {
+            status.innerText = "😵 哎呀，個網頁好似攰得滯，重新試下？";
+        } finally {
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
