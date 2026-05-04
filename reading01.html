@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>小豬特工隊：全能智慧王 (完整加強版)</title>
+    <style>
+        :root {
+            /* 字體加大 30% (原本約 16-18px，現在調至 22-24px) */
+            --base-font-size: 24px; 
+        }
+
+        body { 
+            font-family: 'Microsoft JhengHei', sans-serif; 
+            background-color: #fcf8ff; 
+            color: #333; 
+            line-height: 1.8; 
+            padding: 20px;
+            font-size: var(--base-font-size);
+        }
+
+        .container { 
+            max-width: 900px; 
+            margin: auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            border: 5px solid #ffb6c1; 
+        }
+
+        h1 { text-align: center; color: #d63384; font-size: 2em; margin-bottom: 10px; }
+        h3 { color: #ff1493; border-bottom: 2px solid #ffdae0; padding-bottom: 5px; }
+
+        .timer { 
+            text-align: center; font-size: 1.5em; color: #ff4500; 
+            font-weight: bold; margin-bottom: 30px; background: #fff0eb;
+            padding: 10px; border-radius: 50px;
+        }
+
+        /* 朗讀高亮樣式 */
+        .highlight {
+            background-color: #ffff00;
+            color: #000;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 0 2px;
+        }
+
+        .reading-section {
+            background: #fffafa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid #ffe4e1;
+            margin-bottom: 30px;
+        }
+
+        .control-panel {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            font-size: 18px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-speak { background: #4caf50; color: white; }
+        .btn-stop { background: #f44336; color: white; }
+        .btn-answer { background: #ff69b4; color: white; margin-top: 10px; }
+        .btn:hover { transform: scale(1.05); opacity: 0.9; }
+
+        .question-box {
+            background: #f0f7ff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 8px solid #2196f3;
+        }
+
+        .hidden-answer { 
+            display: none; 
+            background: #e7f3ff; 
+            padding: 15px; 
+            margin-top: 10px; 
+            border-radius: 8px; 
+            font-size: 0.9em;
+            color: #0056b3;
+        }
+
+        .footer { text-align: center; margin-top: 50px; font-size: 14px; color: #aaa; }
+
+        /* 分割文字用 */
+        #article-content span { transition: background 0.1s; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🐷 小豬特工：智慧全能挑戰 🐷</h1>
+    <div class="timer">⏳ 挑戰限時：<span id="time">15:00</span></div>
+
+    <!-- (一) 閱讀理解 -->
+    <section class="reading-section">
+        <h3>(一) 閱讀理解：神奇的小豬</h3>
+        
+        <div class="control-panel">
+            <button class="btn btn-speak" onclick="startSpeaking()">▶️ 廣東話朗讀並追蹤</button>
+            <button class="btn btn-stop" onclick="stopSpeaking()">⏹️ 停止</button>
+        </div>
+
+        <div id="article-content">
+            <!-- 這裡的文字會由 JS 自動加上 span 以便做 Highlight -->
+            一提起豬，你會想到什麼？是牠那圓滾滾、愛玩泥巴的外表，還是貪吃、貪睡和愚蠢的印象？其實，豬這種動物擁有許多不為人知的特點，是人類生活中的重要夥伴。
+            首先，豬全身都是寶，對人類的貢獻極大。豬皮含有豐富的膠原質，是製作橡皮糖的原料之一；豬骨中的脂肪酸能用於製作護髮劑，讓頭髮散發光澤；甚至連豬的糞便也包含大量有機物質，是品質極高的天然肥料。
+            豬的嗅覺發達，其靈敏程度令人驚訝。根據科學研究，豬的嗅覺發達程度遠高於人類，甚至比嗅覺靈敏的狗還要高出八倍。這是因為豬的鼻腔內分佈了密密麻麻的嗅覺神經。經過訓練的豬，不僅能嗅出埋在地底深處的地雷，擔任軍事偵察工作，還能幫助法國農民尋找地底下的珍貴蘑菇。雖然狗也能做這項工作，但豬的記憶力更出色，即使每星期只搜尋一次，牠也不會忘記地點。
+            此外，豬還是聰慧絕頂的動物。實驗證明，豬能夠認出鏡子裏的自己，這代表牠們具有自我意識。牠們還會辨認形狀，能像三歲兒童一樣把相同的形狀歸類。隨著科技日新月異，現在有研究發現，經過特殊訓練的豬甚至會玩簡單的電腦遊戲，還會根據室內溫度調節暖氣系統呢！
+			看到這裏，你是否已經改變了對豬的印象？豬不僅聰明、記性好，還
+			在各個領域默默地為人類作出貢獻，絕對是我們的「好隊友」。
+        </div>
+
+        <div class="question-box">
+		<p>			從文中找出適當的詞語，填在第1-2 題的橫線上。
+            <p>1. 這支部隊派出了無人機，前往敵方陣地執行__________任務。
+			<p>2. 圖書館館長將這些新書重新__________，讓讀者更容易找到想看的書。</p>
+            <p>3. 文中哪個四字詞形容「事物進步、發展很快，不斷出現新面貌」呢？</p>
+			<p> _____________ </p>
+            <button class="btn btn-answer" onclick="toggle('ans1')">解鎖報告</button>
+            <div id="ans1" class="hidden-answer">1. 偵察 / 2. 歸類 / 3. 日新月異</div>
+        </div>
+    </section>
+
+    <!-- (二) 標點符號 -->
+    <section class="question-box">
+        <h3>(二) 標點符號大挑戰</h3>
+        <p style="letter-spacing: 2px;">明 德有很多不同嗜好( )除了愛閱讀文學傑作( )西遊記( )外( )還喜歡收集各種昆蟲標本( )弟弟瞪大眼睛問道( )( )哥哥( )難道你不害怕那些毛茸茸的蜘蛛嗎( )( )明德笑着回答( )( )每種生物都有牠獨特的魅力啊( )</p>
+        <button class="btn btn-answer" onclick="toggle('ans2')">檢查符號</button>
+        <div id="ans2" class="hidden-answer">，《 》 ， 。 ： 「 ， ？ 」 ： 「 ！ 」</div>
+    </section>
+
+    <!-- (三) 排句成段 -->
+    <section class="question-box">
+        <h3>(三) 排句成段</h3>
+        <p>1. 遊戲機排序：(B)不贊成 → (E)怕沉迷 → (C)只要不沉迷 → (D)不會荒廢 → (A)減輕壓力</p>
+        <p>2. 維園排序：(D)好地方 → (B)周日清晨 → (C)有的太極有的聊天 → (A)變得熱鬧 → (E)帶走疲勞</p>
+        <button class="btn btn-answer" onclick="toggle('ans3')">對答案</button>
+        <div id="ans3" class="hidden-answer">1: B-E-C-D-A / 2: D-B-C-A-E</div>
+    </section>
+
+    <!-- (四) 段義辨析 -->
+    <section class="question-box" style="border-left-color: #ff9800;">
+        <h3>(四) 段義終極解碼</h3>
+        <p>1. 大熊貓段落：(C) 受人喜愛的原因</p>
+        <p>2. 智能手機段落：(C) 碎片化閱讀的負面影響</p>
+    </section>
+
+    <div class="footer">
+        <p>Fung Wing Star Education - P3/P4 專用教材</p>
+    </div>
+</div>
+
+<script>
+    // 1. 初始化文字：將文字拆解成單個字符以實現 Highlight
+    const contentBox = document.getElementById('article-content');
+    const originalText = contentBox.innerText;
+    contentBox.innerHTML = originalText.split('').map(char => `<span>${char}</span>`).join('');
+    const spans = contentBox.querySelectorAll('span');
+
+    let synth = window.speechSynthesis;
+    let utterance;
+
+    function startSpeaking() {
+        synth.cancel(); // 先停止之前的
+        
+        utterance = new SpeechSynthesisUtterance(originalText);
+        utterance.lang = 'zh-HK';
+        utterance.rate = 0.85; // 稍慢有利於追蹤
+        
+        // 核心功能：當語音讀到某個位置時觸發
+        utterance.onboundary = function(event) {
+            if (event.name === 'word' || event.name === 'sentence' || !event.name) {
+                const charIndex = event.charIndex;
+                resetHighlight();
+                // 為當前讀到的字及其後一小段加上高亮 (視瀏覽器而定，通常 charIndex 很準確)
+                if (spans[charIndex]) {
+                    spans[charIndex].classList.add('highlight');
+                    // 為了視覺連貫，通常會高亮一小組字
+                    for(let i=0; i<3; i++) {
+                        if(spans[charIndex+i]) spans[charIndex+i].classList.add('highlight');
+                    }
+                }
+            }
+        };
+
+        utterance.onend = resetHighlight;
+        
+        // 廣東話語音包優化
+        const voices = synth.getVoices();
+        const hkVoice = voices.find(v => v.lang.includes('HK'));
+        if (hkVoice) utterance.voice = hkVoice;
+
+        synth.speak(utterance);
+    }
+
+    function resetHighlight() {
+        spans.forEach(span => span.classList.remove('highlight'));
+    }
+
+    function stopSpeaking() {
+        synth.cancel();
+        resetHighlight();
+    }
+
+    // 答案切換
+    function toggle(id) {
+        const x = document.getElementById(id);
+        x.style.display = (x.style.display === "block") ? "none" : "block";
+    }
+
+    // 15分鐘計時器
+    let time = 15 * 60;
+    const timerEl = document.getElementById('time');
+    const timerInterval = setInterval(() => {
+        let mins = Math.floor(time / 60);
+        let secs = time % 60;
+        timerEl.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (time <= 0) {
+            clearInterval(timerInterval);
+            alert("時間到！請檢查答案。");
+        }
+        time--;
+    }, 1000);
+
+    // 解決 Chrome 語音包加載問題
+    window.speechSynthesis.onvoiceschanged = () => synth.getVoices();
+</script>
+
+</body>
+</html>
